@@ -1,0 +1,313 @@
+
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+
+
+
+% *** CITATION PACKAGES ***
+%
+\ifCLASSOPTIONcompsoc
+  % IEEE Computer Society needs nocompress option
+  % requires cite.sty v4.0 or later (November 2003)
+  \usepackage[nocompress]{cite}
+\else
+  % normal IEEE
+  \usepackage{cite}
+\fi
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+   \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+   \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+
+
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algorithmic}
+\usepackage{array}
+
+% *** SUBFIGURE PACKAGES ***
+\ifCLASSOPTIONcompsoc
+  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+\else
+  \usepackage[caption=false,font=footnotesize]{subfig}
+\fi
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\graphicspath{{images/}}
+
+\begin{document}
+
+\title{AMAP-Stitching: As-Much-As-Possible Content-Preserving Image Stitching}
+
+
+\author{Yun Zhang,
+        Yu-Kun Lai,~\IEEEmembership{Member,~IEEE,}
+        and~Fang-Lue Zhang,~\IEEEmembership{Member,~IEEE}% <-this % stops a space
+\IEEEcompsocitemizethanks{\IEEEcompsocthanksitem Yun Zhang is with the Institute of Zhejiang Radio and TV Technology, Communication University of Zhejiang, Hangzhou, China, 310018.\protect\\
+E-mail: zhangyun@cuz.edu.cn
+\IEEEcompsocthanksitem  Yu-Kun Lai is with the School of Computer Science and Informatics, Cardiff University, Wales, UK,  CF24 3AA.\protect\\
+E-mail: Yukun.Lai@cs.cardiff.ac.uk
+\IEEEcompsocthanksitem Fang-Lue Zhang is with the School of Engineering and Computer Science, Victoria University of Wellington, New Zealand.\protect\\
+E-mail: fanglue.zhang@ecs.vuw.ac.nz
+}% <-this % stops an unwanted space
+\thanks{}}
+
+% The paper headers
+\markboth{}%
+{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Computer Society Journals}
+
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+
+This paper proposes AMAP-Stitching, which aims to preserve as much as possible content in image stitching, and avoid losing too much information in the irregular boundary cropping, so that the shape stitched images can be normalized to be the rectangle.
+In our method, the traditional stitching is improved by considering the content-preserving constraint, and the stitching process is configured to be a two-step global optimization which can be efficiently solved.
+With a grid mesh on each images for stitching, we first conduct stitching by traditional warping-based optimization, and get the outer rectangle of stitching results.
+Then, we obtain the boundary vertices on the irregular warped meshes by the polygon boolean operations.
+With the boundary vertices, we proceed the second step optimization to preserve the feature alignment, local shape, and global features.
+To reduce the distortion after rectangling, we optimize the rectangling strategy in a content-aware manner.
+We further extend the idea of AMAP-stitching to videos and Sefie photography, and integrate the temporal coherence and portrait-preserving into the optimization.
+Experiments show that our method can efficiently produce visual-pleasing results with unnoticeable distortion and artifacts.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+AMAP-stitching, rectangling, warping, content-aware.
+\end{IEEEkeywords}}
+
+
+% make the title area
+\maketitle
+
+
+\IEEEdisplaynontitleabstractindextext
+
+\IEEEpeerreviewmaketitle
+
+
+\IEEEraisesectionheading{\section{Introduction}\label{sec:introduction}}
+
+\IEEEPARstart{I}{mage} stitching is a well-studied problem, which has been successfully applied to smart phones and portable cameras, and people can easily take panorama images simply by moving cameras. Previous methods \cite{journals/ftcgv/Szeliski06,journals/pami/ZaragozaCTBS14,conf/eccv/ChenC16}mainly focus on accurate alignment, seamless and natural stitching.
+However, most stitching results have irregular boundaries, and the final panorama images are obtained by cropping, which may lose image content and reduce the impression of wide angle photography. In order to produce panorama images with regular boundaries, image completion techniques\cite{journals/mta/YenYC17,journals/tog/BarnesSFG09} are used to synthesize the missing region in the bounding box. However, these methods are not stable, and may fail to synthesize semantic contents in images.
+To generate panorama images with regular boundaries, He et al. \cite{journals/tog/HeC013} proposed a warping based method to rectangling panorama images, which can stably produce visual-pleasing panorama images with regular boundaries. Although useful and effective, their method treats stitching and rectangling as two individual processes, thus has the following limitations: (1) the rectangling and stitching may affect each other, thus it is hard to get optimized results; (2) it is hard to place grid meshes in irregular input panoramas, and meshes on the boundaries may contain small holes. (3) the warping which is based on the stitched images, may degrade the panorama.
+Actually, rectangling and stitching are tightly related, and 
+
+
+In this paper, we consider rectangling during the stitching step, and construct a global optimization to get the final
+
+
+
+combine panorama rectangling with
+
+
+To further improve the panorama rectangling, we
+
+
+
+takes irregular stitched images as input, and the performance is largely determined by the quality of input
+
+
+
+after seam carving and warping, the image quality of final result may reduce. In addition, it is hard to place grid meshes in irregular input panoramas, and meshes on the boundaries may contain small holes.
+
+
+
+which is not easy to place grid mesh on the input panorama
+
+
+then produce rectangle results by seam carving and warping.
+
+
+
+%
+
+
+ %\begin{equation} \label{equ:brush_diffusion}
+%\begin{aligned}
+ %   E(u)=&\sum\limits_{p\in I} (w_{d}(p)(u(p)-d(p))^{2}+\\
+  %  &\nabla \textbf{u}_{p}^{T} \textbf{w}_{p}\nabla\textbf{u}_{p})
+%\end{aligned}
+%\end{equation}
+
+%where $d(p)$ refers to the values on the strokes, and $w_d(p)$ specifies the mask of the strokes.
+%$\nabla \textbf{u}$ denotes the gradient of the disparity map $u$ along the x and y axis. $\textbf{w}_{p}$ refers to a 2x2 diagonal matrix whose diagonal elements are $w_{x}(p)$ and $w_{y}(p)$.
+
+%\begin{equation}
+%w_d(p)=\left\{
+ %            \begin{array}{ll}
+  %                  \infty & p \in strokes \\
+   %                 0  & otherwise
+   %          \end{array}
+   %     \right.
+%\end{equation}
+
+% \begin{figure*}[t] %% htbp
+ % \centering
+ % \includegraphics[width=1.0\textwidth]{Figure1}
+
+  %\caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:pipeline}
+%\end{figure*}
+
+
+
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps (small caps for compsoc).
+%
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+%
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by the IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+%
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+%
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+
+
+
+%\hfill mds
+%\hfill August 26, 2015
+
+\subsection{Subsection Heading Here}
+Subsection text here.
+
+
+\subsubsection{Subsubsection Heading Here}
+Subsubsection text here.
+
+
+
+
+
+
+\section{Conclusion}
+The conclusion goes here.
+
+
+
+
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+
+% use section* for acknowledgment
+\ifCLASSOPTIONcompsoc
+  % The Computer Society usually uses the plural form
+  \section*{Acknowledgments}
+The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+\bibliographystyle{IEEEtran}
+\bibliography{tvcg}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+
+%\begin{thebibliography}{1}
+
+%\bibitem{IEEEhowto:kopka}
+%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
+ % 0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+
+%\end{thebibliography}
+
+% biography section
+%
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+\begin{IEEEbiography}{Michael Shell}
+Biography text here.
+\end{IEEEbiography}
+
+% if you will not have a photo at all:
+\begin{IEEEbiographynophoto}{John Doe}
+Biography text here.
+\end{IEEEbiographynophoto}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+\end{document}
+
+
