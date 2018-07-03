@@ -58,7 +58,7 @@
 
 \begin{document}
 
-\title{Content-Preserving Image Stitching with the Regular Boundary Constraint}
+\title{Content-Preserving Image Stitching with the Regular Boundary Constraint} % title must contain stitching
 
 
 \author{Yun Zhang,
@@ -147,7 +147,7 @@ For better performance in image alignment, Zaragoza et al.~\cite{journals/pami/Z
 Based on the accurate alignment in APAP~\cite{journals/pami/ZaragozaCTBS14}, Lin et al.~\cite{conf/CVPR/LinPRA15} combined local homography and global similarity transformation to achieve more continuous and smooth stitching, and provided more natural panorama with less visible parallax and perspective distortion.
 Li et al.~\cite{conf/ICCV/LiY0Q15} proposed dual-feature warping-based model by combining keypoints and line segment features. However, the 2D model proposed in this paper cannot handle large parallax and depth variation, and it is difficult to determine the line correspondences in images with large parallax.
 For natural warping in stitching, Chang et al.~\cite{conf/cvpr/ChangSC14} proposed a parametric warp which combines projective and similarity transformation. By combining APAP~\cite{journals/pami/ZaragozaCTBS14}, their method can provide more accurate alignment, less distortion.
-Chen et al. \cite{conf/eccv/ChenC16} proposed natural image stitching with global similarity prior to reduce distortion while keep good alignment. To preserve global similarity, they further proposed schemes to select proper scale and rotation for more natural stitching results.
+Chen et al.~\cite{conf/eccv/ChenC16} proposed natural image stitching with global similarity prior to reduce distortion while keep good alignment. To preserve global similarity, they further proposed schemes to select proper scale and rotation for more natural stitching results.
 To stitch images with large parallax, Zhang~\cite{conf/cvpr/ZhangL14a} proposed local stitching method, which is based on the observation that overlapping regions do not need to be aligned perfectly.
 Lin et al.~\cite{conf/eccv/LinJCDL16} proposed a seam-guided local alignment, and optimal local alignment is guided by the seam estimation.
 In their method, salient curve and line structures are preserved by local and non-local similarity constraint.
@@ -157,13 +157,13 @@ Inspired by~\cite{journals/tog/HeC013}, We incorporate rectangling into the stit
 We also proposed solutions to deal with challenging cases, such as images that are not completely shot, and apply our method to panoramic video and selfie photography.
 
 \textbf{video stitching}.
-Compared with image stitching, video stitching is much more difficult, due to the camera motion, dynamic foreground and large parallax. 
+Compared with image stitching, video stitching is much more difficult, due to the camera motion, dynamic foreground and large parallax.
 For static camera settings, such as multi-camera surveillance~\cite{journals/sensors/HeY16,journals/itiis/YinLWLZ14},  videos from different cameras are aligned only once, and the main challenge is to avoid ghosting and artifacts caused by moving objects.
 For moving cameras with relative fixed positions, such as camera arrays fixed on the rig~\cite{journals/cgf/PerazziSZKWWG15}, cameras can be pre-calibrated for global stitching of videos, and spatia-temporally coherent warping, minimal distortion are the main challenges due to the motion and parallax.
 Google streetview~\cite{journals/computer/AnguelovDFFLLOVW10} also applies moving camera arrays for street view capture and panorama generation.
 To generate high-quality panorama videos, for videos captures by camera arrays fixed on a rig, Zhu et al.~\cite{journals/tip/ZhuLWZMLH18} proposed realtime panorama video blending.
 Meng et al.~\cite{conf/mm/MengWL15} proposed multi-UAV surveillance system that supports real-time video stitching.
-Recently, many researchers focus on stitching algorithm for videos shot by multiple hand-held cameras. 
+Recently, many researchers focus on stitching algorithm for videos shot by multiple hand-held cameras.
 El-Saban et al.~\cite{conf/icip/El-SabanEKR11} proposed optimal seam selection blending for fast video stitching, however, they do not consider video stabilization.
 Lin et al.~\cite{journals/cgf/LinLCZ16} firstly proposed robust framework stitch videos from moving hand-held cameras, which incorporates stabilization and stitching into a unified framework.
 Guo et al. and Nei et al.~\cite{journals/tip/GuoLHZZG16,journals/tip/NieSZSL18} further improve the performance of  jointly video stabilization and stitching framework.
@@ -172,6 +172,58 @@ In this paper, we extend our content-preserving image stitching to videos that a
 
 
  \section{OVERVIEW}
+
+Fig.~\ref{fig:pipeline} gives the pipeline of our content-preserving stitching.
+The input to our approach is a number of images with content overlaps, and the goal is to obtain panorama images with regular boundaries by our content-preserving stitching.
+The core of our approach is the unified image stitching and rectangling optimization, which contains following steps:
+
+%Similar to~\cite{journals/tog/HeC013}, we also call this process "rectangling"~\cite{journals/tog/HeC013}, which contains following steps.
+\textbf{Preprocessing}. 
+In this step, we first calculate the image match graph using the method proposed in~\cite{journals/ijcv/BrownL07}, and those connected images are aligned to be panoramas. This automatic match process allows stitching with complex image overlaps.
+For straight line and global feature preserving, we detect lines in all images using fast line segment detector~\cite{journals/pami/GioiJMR10}.
+
+\textbf{Initial image stitching}. 
+The goal of this step is to initialize our content-preserving stitching, and our regular boundary constraints are based on the analysis of warped meshes after stitching. The stitching strategy in this step is also applied in our global optimization which combines stitching and rectangling.
+We apply APAP~\cite{journals/pami/ZaragozaCTBS14} for accurate feature alignment.
+Inspired by~\cite{conf/eccv/ChenC16}, we also add a global similarity term for natural stitching with less distortion.
+
+\textbf{Irregular boundary construction}.
+In this step, we detect the irregular boundary by analyzing the meshes of warped images after the initial stitching.
+We extract the contour of each warped mesh, and formulate the problem as a polygon boolean Union operation, which can be efficiently solved.
+ We further determine the corners and boundaries in four directions.
+ 
+ \textbf{Content-preserving image stitching}.
+ In this step, we propose a global optimization which aims to generate panoramas with regular boundaries in the stitching framework.
+ The optimization consists of the following constrains: feature alignment, shape preserving, straight lines preserving, global similarity preserving and regular boundary constraints.
+With the optimized vertices, we further warp the mesh, and blend overlapped regions to generate panoramas.
+
+
+
+
+\begin{figure*}[t] %% htbp
+  \centering
+  \includegraphics[width=1.0\textwidth]{flowchart}
+
+  \caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:pipeline}
+\end{figure*}
+
+ \subsection{Initial image stitching}
+ 
+ 
+
+\subsection{Irregular boundary construction}
+
+\begin{figure}[t] %% htbp
+  \centering
+  \includegraphics[width=0.49\textwidth]{polybool}
+
+  \caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:polybool}
+\end{figure}
+
+~\cite{journals/gandc/MartinezRF09}
+
+\subsection{Content-preserving image stitching} 
+
 
 
  \section{RESULTS AND APPLICATIONS}
