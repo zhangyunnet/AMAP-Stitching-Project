@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 
 \documentclass[10pt,journal,compsoc]{IEEEtran}
 
@@ -154,21 +154,23 @@ Contributions of this paper are as follows:
  \section{RELATED WORK}
 In this section, we briefly review the most related works.
 
-\textbf{image stitching}.
+\textbf{Image stitching}.
 Image stitching aims to create seamless and natural photo-mosaics, and a comprehensive survey of image stitching algorithms is given in~\cite{journals/ftcgv/Szeliski06}.
 Brown et al.~\cite{journals/ijcv/BrownL07} proposed fully automatic panoramic image stitching, and align multiple images by a single homography. Their method is effective under assumption that camera only rotates around its optical center, images are shot from the same viewpoint and the scenes are nearly planar. However, for images shot by hand-held cameras always contain parallax, which limits the application of their method.
 Given the limitation of single homegraphy, Gao et al.~\cite{conf/CVPR/GaoKB11} proposed to use two homographies to perform nonlinear alignment, when the scene is modeled by dominant distant and ground planes. However, their method is only effective when there is no local perspective variations.
-For better performance in image alignment, Zaragoza et al.~\cite{journals/pami/ZaragozaCTBS14} proposed as-projective-as-possible(APAP) warps based on moving DLT, and can seamlessly align images with different projective models. Their method can achieve globally perspective, while allowing local non-projective deviations, thus can deal with some challenging cases. Now APAP~\cite{journals/pami/ZaragozaCTBS14}  has been widely applied for its excellent performance in accurate alignment. In this paper, we also apply APAP for image alignment in stitching.
-Based on the accurate alignment in APAP~\cite{journals/pami/ZaragozaCTBS14}, Lin et al.~\cite{conf/CVPR/LinPRA15} combined local homography and global similarity transformation to achieve more continuous and smooth stitching, and provided more natural panorama with less visible parallax and perspective distortion.
+
+For better performance in image alignment, Zaragoza et al.~\cite{journals/pami/ZaragozaCTBS14} proposed as-projective-as-possible(APAP) warping based on Moving DLT, and can seamlessly align images with different projective models. Their method can achieve globally perspective, while allowing local non-projective deviations, thus can deal with some challenging cases. Now APAP~\cite{journals/pami/ZaragozaCTBS14}  has been widely applied for its excellent performance in image alignment. In this paper, we also apply APAP for image alignment in our initialization step before optimization.
+Based on APAP, researchers attempted to get more natural panorama. Lin et al.~\cite{conf/CVPR/LinPRA15} combined local homography and global similarity transformation to achieve more continuous and smooth stitching results. It provided stitched panorama results with less visible parallax and perspective distortion.
 Li et al.~\cite{conf/ICCV/LiY0Q15} proposed dual-feature warping-based model by combining keypoints and line segment features. However, the 2D model proposed in this paper cannot handle large parallax and depth variation, and it is difficult to determine the line correspondences in images with large parallax.
-For natural warping in stitching, Chang et al.~\cite{conf/cvpr/ChangSC14} proposed a parametric warp which combines projective and similarity transformation. By combining APAP~\cite{journals/pami/ZaragozaCTBS14}, their method can provide more accurate alignment, less distortion.
-Chen et al.~\cite{conf/eccv/ChenC16} proposed natural image stitching with global similarity prior to reduce distortion while keep good alignment.
-To preserve global similarity, they further proposed schemes to select proper scale and rotation for more natural stitching results.
-To stitch images with large parallax, Zhang et al.~\cite{conf/cvpr/ZhangL14a} proposed local stitching method, which is based on the observation that overlapping regions do not need to be aligned perfectly.
-Lin et al.~\cite{conf/eccv/LinJCDL16} proposed a seam-guided local alignment, and optimal local alignment is guided by the seam estimation.
+Chang et al.~\cite{conf/cvpr/ChangSC14} proposed a parametric warp which combines projective and similarity transformation. By combining with APAP~\cite{journals/pami/ZaragozaCTBS14}, their method can significantly reduce  distortions in final results.
+Chen et al.~\cite{conf/eccv/ChenC16} further proposed natural image stitching with global similarity prior. They proposed a selection scheme to determine the proper global scale and rotation for each image. 
+
+There are also methods focusing on the local alignment adjustment for eliminating stitching artifacts.
+To stitch images with large parallax, Zhang~\cite{conf/cvpr/ZhangL14a} proposed a local stitching method, which is based on the observation that overlapping regions do not need to be aligned perfectly. Lin et al.~\cite{conf/eccv/LinJCDL16} proposed a seam-guided local alignment, and optimal local alignment is guided by the seam estimation.
 In their method, salient curve and line structures are preserved by local and non-local similarity constraint.
-Very recently, Li et al.~\cite{journals/tmm/LiWLZZ18} proposed robust elastic warping for parallax-tolerant image stitching. To ensure a robust alignment, they proposed a Bayesian model to remove incorrect local matches.
-He et al.~\cite{journals/tog/HeC013} proposed a content-aware warping to produce rectangular images from stitched panorama.  Their method is effective to rectangling irregular boundaries caused by projections and casual camera movements. However, their two-step warping strategy separates stitching and rectangling process, which can not ensure an optimal solution, and their method can not process panoramic scenes that are not completely shot.
+Very recently, Li et al.~\cite{journals/tmm/LiWLZZ18} proposed robust elastic warping for parallax-tolerant image stitching. To ensure a robust alignment, they proposed a Bayesian model to remove incorrect local matches. 
+
+However, all these above methods do not consider how to achieve better results in the display window. He et al.~\cite{journals/tog/HeC013} proposed a content-aware warping to produce rectangular images from stitched panorama.  Their method are effective to rectify irregular boundaries caused by projections and casual camera movements. But their two-step warping strategy separates stitching and rectangling process, which can not ensure an optimal solution, and their method can not process scenes that are not completely captured.
 Inspired by~\cite{journals/tog/HeC013}, We incorporate rectangling into the stitching framework, and construct global optimization to get rectangular panoramic images.
 We also proposed solutions to deal with challenging cases, such as images that are not completely shot, and apply our method to panoramic videos and selfies.
 
