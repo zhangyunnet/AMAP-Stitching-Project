@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 \documentclass[10pt,journal,compsoc]{IEEEtran}
 
@@ -1014,3 +1015,405 @@ The authors would like to thank...
 \end{document}
 
 
+=======
+
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+
+
+
+% *** CITATION PACKAGES ***
+%
+\ifCLASSOPTIONcompsoc
+  % IEEE Computer Society needs nocompress option
+  % requires cite.sty v4.0 or later (November 2003)
+  \usepackage[nocompress]{cite}
+\else
+  % normal IEEE
+  \usepackage{cite}
+\fi
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+   \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+   \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+
+
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algorithmic}
+\usepackage{array}
+
+% *** SUBFIGURE PACKAGES ***
+\ifCLASSOPTIONcompsoc
+  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+\else
+  \usepackage[caption=false,font=footnotesize]{subfig}
+\fi
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\graphicspath{{images/}}
+
+\begin{document}
+
+\title{Content-Preserving Image Stitching with the Regular Boundary Constraint} % title must contain stitching
+
+
+\author{Yun Zhang,
+        Yu-Kun Lai,~\IEEEmembership{Member,~IEEE,}
+        and~Fang-Lue Zhang,~\IEEEmembership{Member,~IEEE}% <-this % stops a space
+\IEEEcompsocitemizethanks{\IEEEcompsocthanksitem Yun Zhang is with the Institute of Zhejiang Radio and TV Technology, Communication University of Zhejiang, Hangzhou, China, 310018.\protect\\
+E-mail: zhangyun@cuz.edu.cn
+\IEEEcompsocthanksitem  Yu-Kun Lai is with the School of Computer Science and Informatics, Cardiff University, Wales, UK,  CF24 3AA.\protect\\
+E-mail: Yukun.Lai@cs.cardiff.ac.uk
+\IEEEcompsocthanksitem Fang-Lue Zhang is with the School of Engineering and Computer Science, Victoria University of Wellington, New Zealand.\protect\\
+E-mail: fanglue.zhang@ecs.vuw.ac.nz
+}% <-this % stops an unwanted space
+\thanks{}}
+
+% The paper headers
+\markboth{}%
+{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Computer Society Journals}
+
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+
+This paper proposes content-preserving stitching with the regular boundary constraint, which aims to preserve as much as possible content in image stitching, and avoid losing too much information in the irregular boundary cropping, so that the shape stitched images can be normalized to be the regular.
+In our method, the traditional stitching is improved by considering the regular boundary constraint, and the stitching process is configured to be a two-step global optimization which can be efficiently solved.
+With a grid mesh on each images for stitching, we first conduct stitching by traditional warping-based optimization, and get the outer rectangle of stitching results.
+Then, we obtain the boundary vertices on the irregular warped meshes by the polygon boolean operations.
+With the boundary vertices, we proceed the second step optimization to preserve the feature alignment, local shape, and global features.
+To reduce the distortion after rectangling, we optimize the rectangling strategy in a content-aware manner.
+We further extend the idea of content-preserving to videos and Sefie photography, and integrate the temporal coherence and portrait-preserving into the optimization.
+Experiments show that our method can efficiently produce visual-pleasing results with unnoticeable distortion and artifacts.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+AMAP-stitching, rectangling, warping, content-aware.
+\end{IEEEkeywords}}
+
+
+% make the title area
+\maketitle
+
+
+\IEEEdisplaynontitleabstractindextext
+
+\IEEEpeerreviewmaketitle
+
+
+\IEEEraisesectionheading{\section{INTRODUCTION}\label{sec:introduction}}
+\IEEEPARstart{T}{he} rapid recent advances in digital visual media mean that the public now capture and produce high-quality images and videos, which has promoted the computer graphics applications that utilise visual data captured by ordinary users. Panoramic images/videos are one of these successful applications. With the integrated panorama module in their smart phones and portable cameras, people can easily take a panorama photo simply by moving cameras. It is also the most feasible way to get virtual reality content for immersive vision experiences. However, not like the well calibrated images captured by professional devices with a camera array, the intrinsic and extrinsic parameters of the images captured by consumer-level devices are difficult to estimate. Thus, a robust image stitching method which directly stitches using the visual content is much more important for the applications designed for the ordinary users,
+
+Recently there has been good progress in image stitching. However, due to the casual motion of the hand-held cameras, after feature alignment, most stitching results from previous methods have irregular boundaries. When we want to display the full panorama in common screens, or generate free-viewpoint photos from one part of the whole scene recorded by the image collection, we can only show them in rectangular windows. The most simple method is cropping. but it will lose important content of stitched panorama, thus may reduce the impression of wide angle photography. In order to produce panorama images with rectangular boundaries, image completion techniques~\cite{journals/mta/YenYC17,journals/tog/BarnesSFG09} are used to synthesise the missing region in the panorama's bounding box. However, these methods are not stable, and may fail when there need to be semantic meaningful objects. He et al.~\cite{journals/tog/HeC013} proposed a warping based method to rectangling panorama images, which can stably produce visual-pleasing panorama images with rectangular boundaries. But their method suffers from the following problems: (1) The stitching and rectangling are two separated processes, so the latter rectangling step may twist the optimized stitching result, making it hard to get an optimal rectangle panorama. (2) When placing grid meshes in stitched irregular panoramas for rectangling, boundary meshes may contain small holes; (3) The warping-based method will produce large distortion and destroy the feature alignment, when the scene is not completely shot.Thus, when the gap between the rectangle boundary and irregular panorama boundary is large, or there are holes which are hard for completion and warping methods to fill, there need to be a better approach to create the panorama with regular boundaries.
+
+%\IEEEPARstart{I}{mage} stitching is a well-studied problem, which has been successfully applied to smart phones and portable cameras, and people can easily take panorama images simply by moving cameras.
+%Panorama images are popular due to the wide viewing and immersion experiences, and rise of VR further expands the application of stitching techniques.
+%Due to the casual moving of hand-held cameras, after feature alignment, most stitching results have irregular boundaries. For better viewing, the final results generated by our cameras are usually cropped by rectangular windows.
+%Although simple and effective, the cropping-based method can not preserve complete content of stitched panorama, thus may reduce the impression of wide angle photography.
+%In order to produce panorama images with regular boundaries, image completion techniques~\cite{journals/mta/YenYC17,journals/tog/BarnesSFG09} are used to synthesize the missing region in the bounding box. However, these methods are not stable, and may fail to synthesize semantic contents in images.
+
+%To generate panorama images with irregular boundaries, He et al.~\cite{journals/tog/HeC013} proposed a warping based method to rectangling panorama images, which can stably produce visual-pleasing panorama images with rectangular boundaries.
+%Although useful and effective, their method treats stitching and rectangling as two individual processes, thus still suffer from some problems: (1) The rectangling and stitching may affect each other, thus it is hard to get optimized results; (2) It is hard to place grid meshes in irregular input panoramas, and boundary meshes may contain small holes; (3) The warping-based method will produce large distortion and destroy the feature alignment, when the scene is not completely shot.
+%Actually, the warping-based rectangling~\cite{journals/tog/HeC013} are effective only when the gap between the rectangle and the irregular boundary is small, and the content is enough to make a rectangle panorama with unnoticeable distortion, which limits the range of application.
+I%n practice, users tend to shot images with hand-held cameras in a casual manner, and direct retangling irregular boundaries may introduce too much distortions, which degrades the visual effects of panorama.
+In this paper, we propose a content-preserving image stitching method, which aims to regularise the boundary of stitched panorama, and preserve as much as possible content after rectangular cropping. Our method is based on the following observations:
+(1) Rectangling and stitching are tightly related, and combination of the two processes will generate the optimal rectangling panorama in a content-aware manner.
+(2) The applications of panorama rectangling require the method to preserve as much as possible image content in a cropping window without annoying distortion, i.e., free-viewpoint photo generation, Thus it is not necessary to warp the boundary to a single rectangle; a piece-wise rectangle will be more appropriate. Thus, the key idea of our algorithm is a mesh-based global optimization approach which can jointly optimize the boundary and content stitching to get a piecewise rectangular panorama.   
+%two-step optimization, that first stitch images using state-of-the-art method to get irregular boundaries, and then globally optimize the mesh to get stitching results with regular boundaries.
+Our method firstly needs an initial stitched result, where we use image stitching with the global similarity prior~\cite{conf/eccv/ChenC16}, and get the boundary vertices by the polygon boolean union operation.
+%In the first step, we apply image stitching with the global similarity prior~\cite{conf/eccv/ChenC16}, and get the boundary vertices by the polygon boolean union operation.
+In our global optimization, we first organize the boundary vertices, and combine meshes according to the intersections on the boundary. Inspired by state-of-the-art stitching~\cite{conf/eccv/ChenC16}, we take the regular boundary, shapes preserving, straight lines, and global similarity constraints into account when optimizing the final grid vertices. We first get the result by simply rectangling the panorama, Then we iteratively optimize the boundary constraints in a piece-wise manner for optimal results with less distortion and better visual effects.
+Our method works well in a variety of cases, and can produce visual-pleasing results with no user interactions.
+For challenging cases, such as large missing regions for a whole panorama rectangle, we piece-wisely regularize the boundary, which can help users easily crop panorama while preserving as much as possible content in the cropping window.
+In addition, our method can be applied in videos and selfie photography, and can produce panorama video and selfie with regular boundary.
+
+Contributions of this paper are as follows:
+\begin{itemize}
+   \item We propose a global optimization to rectangling the irregular boundary problem in the stitching framework by considering the regular boundary constraint, and our method can be easily applied to panorama selfie and videos.
+   \item We propose a piece-wise rectangling scheme to reduce the distortion while preserving as much as possible image content when cropping the panorama to generate new photos.
+\end{itemize}
+
+ \section{RELATED WORK}
+In this section, we briefly review the most related works.
+
+\textbf{image stitching}.
+Image stitching aims to create seamless and natural photo-mosaics. A comprehensive survey of image stitching algorithms is given in~\cite{journals/ftcgv/Szeliski06}. We only mention representative works in this section.
+Brown et al.~\cite{journals/ijcv/BrownL07} proposed fully automatic panoramic image stitching, and align multiple images by a single homography. Their method is effective under assumption that camera only rotates around its optical center, images are shot from the same viewpoint and the scenes are nearly planar. However, for images shot by hand-held cameras always contain parallax, which limits the application of their method.
+Given the limitation of single homography, Gao et al.~\cite{conf/CVPR/GaoKB11} proposed to use two homographies to perform nonlinear alignment, when the scene is modelled by dominant distant and ground planes. However, their method is only effective when there is no local perspective variations.
+For better performance in image alignment, Zaragoza et al.~\cite{journals/pami/ZaragozaCTBS14} proposed as-projective-as-possible(APAP) warping based on Moving DLT, and can seamlessly align images with different projective models. Their method can achieve globally perspective, while allowing local non-projective deviations, thus can deal with some challenging cases. Now APAP~\cite{journals/pami/ZaragozaCTBS14}  has been widely applied for its excellent performance in accurate alignment. In this paper, we also apply APAP for image alignment as an initialization before optimization.
+Based on the accurate alignment in APAP~\cite{journals/pami/ZaragozaCTBS14}, Lin et al.~\cite{conf/CVPR/LinPRA15} combined local homography and global similarity transformation to achieve more continuous and smooth stitching results, and provided more natural panorama with less visible parallax and perspective distortion.
+Li et al.~\cite{conf/ICCV/LiY0Q15} proposed a dual-feature warping-based model by combining keypoints and line segment features. However, the 2D model proposed in this paper cannot handle large parallax and depth variation, and it is difficult to determine the line correspondences in images with large parallax.
+For natural warping in stitching, Chang et al.~\cite{conf/cvpr/ChangSC14} proposed a parametric warp which combines projective and similarity transformation. By combining APAP~\cite{journals/pami/ZaragozaCTBS14}, their method can provide more accurate alignment, less distortion.
+Chen et al.~\cite{conf/eccv/ChenC16} proposed natural image stitching with global similarity prior to reduce distortion while keep good alignment. To preserve global similarity, they further proposed schemes to select proper scale and rotation for more natural stitching results.
+To stitch images with large parallax, Zhang~\cite{conf/cvpr/ZhangL14a} proposed local stitching method, which is based on the observation that overlapping regions do not need to be aligned perfectly.
+Lin et al.~\cite{conf/eccv/LinJCDL16} proposed a seam-guided local alignment, and optimal local alignment is guided by the seam estimation.
+In their method, salient curve and line structures are preserved by local and non-local similarity constraint.
+Very recently, Li et al.~\cite{journals/tmm/LiWLZZ18} proposed robust elastic warping for parallax-tolerant image stitching. To ensure a robust alignment, they proposed a Bayesian model to remove incorrect local matches.
+He et al.~\cite{journals/tog/HeC013} proposed a content-aware warping to produce rectangular images from stitched panorama.  Their method are effective to rectify irregular boundaries caused by projections and casual camera movements. However, their two-step warping strategy separates stitching and rectangling process, which can not ensure an optimal solution, and their method can not process scenes that are not completely shot.
+Inspired by~\cite{journals/tog/HeC013}, We incorporate rectangling into the stitching framework, and construct global optimization to get rectangular panoramic images.
+We also proposed solutions to deal with challenging cases, such as images that are not completely shot, and apply our method to panoramic video and selfie photography.
+
+\textbf{video stitching}.
+Compared with image stitching, video stitching is much more difficult, due to the camera motion, dynamic foreground and large parallax.
+For static camera settings, such as multi-camera surveillance~\cite{journals/sensors/HeY16,journals/itiis/YinLWLZ14},  videos from different cameras are aligned only once, and the main challenge is to avoid ghosting and artifacts caused by moving objects.
+For moving cameras with relative fixed positions, such as camera arrays fixed on the rig~\cite{journals/cgf/PerazziSZKWWG15}, cameras can be pre-calibrated for global stitching of videos, and spatia-temporally coherent warping, minimal distortion are the main challenges due to the motion and parallax.
+Google streetview~\cite{journals/computer/AnguelovDFFLLOVW10} also applies moving camera arrays for street view capture and panorama generation.
+To generate high-quality panorama videos, for videos captures by camera arrays fixed on a rig, Zhu et al.~\cite{journals/tip/ZhuLWZMLH18} proposed a realtime panorama video blending method.
+Meng et al.~\cite{conf/mm/MengWL15} proposed multi-UAV surveillance system that supports real-time video stitching.
+Recently, many researchers focus on stitching algorithm for videos shot by multiple hand-held cameras.
+El-Saban et al.~\cite{conf/icip/El-SabanEKR11} proposed optimal seam selection blending for fast video stitching, however, they do not consider video stabilization.
+Lin et al.~\cite{journals/cgf/LinLCZ16} firstly proposed robust framework stitch videos from moving hand-held cameras, which incorporates stabilization and stitching into a unified framework.
+Guo et al. and Nei et al.~\cite{journals/tip/GuoLHZZG16,journals/tip/NieSZSL18} further improve the performance of  jointly video stabilization and stitching framework.
+Their main contributions include: estimation of inter motions between cameras and intra motions in a video; common background identification for multiple input videos.
+In this paper, we extend our content-preserving image stitching to videos that are captured from unstructured camera arrays\cite{journals/cgf/PerazziSZKWWG15}.
+
+
+ \section{OVERVIEW}
+
+Fig.~\ref{fig:pipeline} gives the pipeline of our content-preserving stitching.
+The input to our approach is a number of images with content overlaps, and the goal is to obtain panorama images with regular boundaries by our content-preserving stitching.
+The core of our approach is the unified image stitching and rectangling optimization, which contains following steps:
+
+%Similar to~\cite{journals/tog/HeC013}, we also call this process "rectangling"~\cite{journals/tog/HeC013}, which contains following steps.
+\textbf{Preprocessing}. 
+In this step, we first calculate the image match graph using the method proposed in~\cite{journals/ijcv/BrownL07}, and those connected images are aligned to be panoramas. This automatic match process allows stitching with complex image overlaps.
+For straight line and global feature preserving, we detect lines in all images using fast line segment detector~\cite{journals/pami/GioiJMR10}.
+
+\textbf{Initial image stitching}. 
+The goal of this step is to initialize our content-preserving stitching, and our regular boundary constraints are based on the analysis of warped meshes after stitching. The stitching strategy in this step is also applied in our global optimization which combines stitching and rectangling.
+We apply APAP~\cite{journals/pami/ZaragozaCTBS14} for accurate feature alignment.
+Inspired by~\cite{conf/eccv/ChenC16}, we also add a global similarity term for natural stitching with less distortion.
+
+\textbf{Irregular boundary construction}.
+In this step, we detect the irregular boundary by analyzing the meshes of warped images after the initial stitching.
+We extract the contour of each warped mesh, and formulate the problem as a polygon boolean Union operation, which can be efficiently solved.
+ We further determine the corners and boundaries in four directions.
+ 
+ \textbf{Content-preserving image stitching}.
+ In this step, we propose a global optimization which aims to generate panoramas with regular boundaries in the stitching framework.
+ The optimization consists of the following constrains: feature alignment, shape preserving, straight lines preserving, global similarity preserving and regular boundary constraints.
+With the optimized vertices, we further warp the mesh, and blend overlapped regions to generate panoramas.
+
+
+
+
+\begin{figure*}[t] %% htbp
+  \centering
+  \includegraphics[width=1.0\textwidth]{flowchart}
+
+  \caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:pipeline}
+\end{figure*}
+
+ \subsection{Initial image stitching}
+ 
+ 
+
+\subsection{Irregular boundary construction}
+
+\begin{figure}[t] %% htbp
+  \centering
+  \includegraphics[width=0.49\textwidth]{polybool}
+
+  \caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:polybool}
+\end{figure}
+
+~\cite{journals/gandc/MartinezRF09}
+
+\subsection{Content-preserving image stitching} 
+
+
+
+ \section{RESULTS AND APPLICATIONS}
+
+ \subsection{Results}
+
+ \subsection{Applications}
+
+ \subsubsection{Selfie expansion}
+
+\subsubsection{Content-preserving Stitching}
+
+
+ \section{CONCLUSION}
+
+
+
+%
+
+
+ %\begin{equation} \label{equ:brush_diffusion}
+%\begin{aligned}
+ %   E(u)=&\sum\limits_{p\in I} (w_{d}(p)(u(p)-d(p))^{2}+\\
+  %  &\nabla \textbf{u}_{p}^{T} \textbf{w}_{p}\nabla\textbf{u}_{p})
+%\end{aligned}
+%\end{equation}
+
+%where $d(p)$ refers to the values on the strokes, and $w_d(p)$ specifies the mask of the strokes.
+%$\nabla \textbf{u}$ denotes the gradient of the disparity map $u$ along the x and y axis. $\textbf{w}_{p}$ refers to a 2x2 diagonal matrix whose diagonal elements are $w_{x}(p)$ and $w_{y}(p)$.
+
+%\begin{equation}
+%w_d(p)=\left\{
+ %            \begin{array}{ll}
+  %                  \infty & p \in strokes \\
+   %                 0  & otherwise
+   %          \end{array}
+   %     \right.
+%\end{equation}
+
+% \begin{figure*}[t] %% htbp
+ % \centering
+ % \includegraphics[width=1.0\textwidth]{Figure1}
+
+  %\caption{Pipeline of \emph{StereoPasting}. In the preprocessing step, we first select and triangulate the 2D foreground, then estimate the disparity map of the target scene. After that we edit the disparity map of the 2D foreground by painting strokes and blend it with the 3D background for depth-consistent composition. At last, the 2D foreground is warped and blended into the target image pair to get the composition results.} \label{fig:pipeline}
+%\end{figure*}
+
+
+
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps (small caps for compsoc).
+%
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+%
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by the IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+%
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+%
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+
+
+
+%\hfill mds
+%\hfill August 26, 2015
+
+
+
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+
+% use section* for acknowledgment
+\ifCLASSOPTIONcompsoc
+  % The Computer Society usually uses the plural form
+  \section*{Acknowledgments}
+The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+\bibliographystyle{IEEEtran}
+\bibliography{tvcg}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+
+%\begin{thebibliography}{1}
+
+%\bibitem{IEEEhowto:kopka}
+%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
+ % 0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+
+%\end{thebibliography}
+
+% biography section
+%
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+%\begin{IEEEbiography}{Michael Shell}
+%Biography text here.
+%\end{IEEEbiography}
+
+% if you will not have a photo at all:
+%\begin{IEEEbiographynophoto}{John Doe}
+%Biography text here.
+%\end{IEEEbiographynophoto}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+\end{document}
+
+
+>>>>>>> parent of 93a06e9... More edits on related work
