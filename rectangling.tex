@@ -55,7 +55,7 @@
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
 
-\graphicspath{{images/}}
+\graphicspath{{figure/}}
 
 \begin{document}
 
@@ -122,27 +122,27 @@ Actually, the warping-based rectangling~\cite{journals/tog/HeC013} are effective
 In practice, users tend to shot images with hand-held cameras in a casual manner, and direct retangling irregular boundaries may introduce too much distortions, which degrades the visual effects of panorama.
 \end{comment}
 
-\IEEEPARstart{T}{he} rapid recent advances in digital visual media mean that the public now capture and produce high-quality images and videos, which has promoted the computer graphics applications that utilise visual data captured by ordinary users. Image/video panorama  is one of these successful applications. With the integrated panorama module in their smart phones and portable cameras, people can easily take a panoramic photos simply by moving cameras. It is also the most feasible way to get virtual reality content for immersive vision experiences. However, unlike the well calibrated images captured by professional devices with a camera array, the intrinsic and extrinsic parameters of the images captured by consumer-level devices are difficult to estimate. Thus, a robust image stitching method which directly stitches using the visual content is much more important for the applications designed for the ordinary users,
+\IEEEPARstart{T}{he} rapid recent advances in digital visual media mean that the public now capture and produce high-quality images and videos, which has promoted the computer graphics applications that utilise visual data captured by ordinary users. Image/video panorama  is one of these successful applications. With the integrated panorama module in their smart phones and portable cameras, people can easily take a panoramic photos simply by moving cameras. It is also the most feasible way to get virtual reality content for immersive vision experiences. However, unlike the well calibrated images captured by professional devices with a camera array, the intrinsic and extrinsic parameters of the images captured by consumer-level devices are difficult to estimate. Thus, a robust image stitching method which directly stitches using the visual content is much more important for the applications designed for the ordinary users.
 
 Recently, a lot of progresses have been made in image stitching. However, due to the casual motion of the hand-held cameras, after feature alignment, most stitching results by previous methods have irregular boundaries. To display the full panorama in common screens, or generate free-viewpoint photos from one part of the whole scene recorded by the image collection, we can only show them in rectangular windows. A simple and direct method is cropping, but it will lose important content of stitched panorama, thus may reduce the impression of wide angle photography. In order to produce panorama images with rectangular boundaries, image completion techniques~\cite{journals/mta/YenYC17, journals/tog/BarnesSFG09} are used to synthesise the missing region in the panorama's bounding box. However, these methods are not stable, and may fail when there need to be semantic meaningful objects. He et al.~\cite{journals/tog/HeC013} proposed a warping based method to rectangling panorama images, which can stably produce visual-pleasing panorama images with rectangular boundaries. But their method suffers from the following problems:
-(1) The stitching and rectangling are two separated processes, so the latter rectangling step may twist the optimized stitching result, making it hard to get an optimal rectangle panorama.
-(2) When placing grid meshes in stitched irregular panoramas for rectangling, boundary meshes may contain small holes, see Fig.~\ref{fig:holes_he}(c).
+(1) The stitching and rectangling are two separated processes, so the latter rectangling step may twist the optimized stitching result, making it hard to get an optimal rectangular panorama.
+(2) When placing grid meshes in stitched irregular panoramas for rectangling, boundary meshes may contain small holes, see Fig.~\ref{fig:piecewise-process}(d) and ~\ref{fig:holes_he}(c).
 (3) The warping-based method will produce large distortion and destroy the feature alignment, when the scene is not completely shot.
 Thus, when the gap between the rectangular boundary and irregular panorama boundary is large, or there are holes which are difficult for completion and warping methods to fill, there need to be a better approach to create the panorama with regular boundaries while avoiding distortions.
 
-In this paper, we propose a content-preserving image stitching, which aims to regularize the boundary of stitched panorama, and preserve as much as possible content in a  rectangular cropping window.
-Our method can also be applied in videos and selfie photography, and can produce panorama video and selfie with regular boundary.
+In this paper, we propose a piecewise rectangling scheme which is incorporated into image stitching framework.
+We aim to regularize the boundary of stitched panorama, and preserve as much as possible content in a  rectangular cropping window.
 Similar to He et al.~\cite{journals/tog/HeC013}, the process of generating panorama images with rectangular boundaries is termed as ``rectangling'' . Our method is based on the following observations:
 (1) Rectangling and stitching are tightly related, and combination of the two processes may help to produce better rectangling panorama in a content-aware manner.
 (2) The aim of panorama rectangling is to preserve as much as possible image content in a rectangular window while avoiding unexpected distortion, thus the irregular boundary should not be simply optimized to be a single rectangle, but piecewise rectangle, see Fig.~\ref{fig:piecewise-process}(c).
 
-Our method works well in a variety of cases, and can produce visual-pleasing results with no user interactions. The key idea of our algorithm is a two-step optimization. We first stitch images using traditional method to get irregular boundaries, and then we extract and outer boundary and analyze the boundary constraint, finally we globally optimize the mesh to get stitching results with regular boundaries.
-In the first step, we apply image stitching with the global similarity prior~\cite{conf/eccv/ChenC16}, and get the boundary vertices by the polygon boolean union operation.
-In the second step, We extract the irregular boundary by the polygon boolean operations, and then construct the regular boundary constraint by analyzing the vertices and intersections in the irregular boundary.
-Finally, we design a global optimization which takes into account the regular boundary, shape preserving, straight lines, global similarity constraints.
-When the target boundary is simply a rectangle, see Fig.~\ref{fig:pipeline}, the panorama image is directly obtained by solving the global optimization.
-For panorama shot by freely moving cameras, the target boundary can not simply represented by a rectangle, see Fig.~\ref{fig:piecewise-process}, and we propose piecewise rectangle to represent the regular boundary.
-With the new boundary condition, we get the panorama by solving the optimization and warping. Then we iteratively combine boundary segments connected by $step$(see Fig.~\ref{fig:pipeline}(f)), and finally we get panorama image with optimal piecewise rectangular boundary. Our final result can help users easily crop panorama while preserving as much as possible content in the cropping window, while avoiding unwanted distortions and enhancing the panorama viewing experiences.
+We first apply image stitching with the global similarity prior~\cite{conf/eccv/ChenC16}, and the warped meshes are initial conditions for our rectangling scheme.
+Then, We extract the irregular boundary by the polygon boolean operations, and construct the piecewise rectangular boundary constraint by analyzing the vertices and intersections on the irregular boundary.
+Finally, we construct a global optimization which takes into account the feature alignment, shape preserving, global similarity constraints, straight lines and  regular boundary.
+When the target boundary is simply a rectangle, see Fig.~\ref{fig:more_results}, the panoramic image is directly obtained by solving the global optimization.
+For panorama shot by freely moving cameras, the target boundary can not simply represented by a rectangle, see Fig.~\ref{fig:pipeline}(f), and we proposed the piecewise rectangular boundary constraint, which is incorporated into the stitching framework, and the final results are obtained by iterative warping based optimization.
+Our method works well in a variety of cases, and can produce visual-pleasing results with no user interactions.
+Our piecewise rectangling can help users crop panorama with ease, while preserving as much as possible content in the cropping window and avoiding unwanted distortions, thus can enhance the panoramic viewing experiences.
 
 Contributions of this paper are as follows:
 \begin{itemize}
@@ -168,8 +168,8 @@ Lin et al.~\cite{conf/eccv/LinJCDL16} proposed a seam-guided local alignment, an
 In their method, salient curve and line structures are preserved by local and non-local similarity constraint.
 Very recently, Li et al.~\cite{journals/tmm/LiWLZZ18} proposed robust elastic warping for parallax-tolerant image stitching. To ensure a robust alignment, they proposed a Bayesian model to remove incorrect local matches.
 He et al.~\cite{journals/tog/HeC013} proposed a content-aware warping to produce rectangular images from stitched panorama.  Their method is effective to rectangling irregular boundaries caused by projections and casual camera movements. However, their two-step warping strategy separates stitching and rectangling process, which can not ensure an optimal solution, and their method can not process panoramic scenes that are not completely shot.
-Inspired by~\cite{journals/tog/HeC013}, We incorporate rectangling into the stitching framework, and construct global optimization to get rectangular panoramic images.
-We also proposed solutions to deal with challenging cases, such as images that are not completely shot, and apply our method to panoramic videos and selfies.
+Inspired by~\cite{journals/tog/HeC013}, We incorporate rectangling into the stitching framework, and construct global optimization to get piecewise rectangular panoramic images.
+Our piecewise rectangling method can  deal with challenging cases, such as panoramic scenes that are not completely shot.
 
 \textbf{video stitching}.
 Compared with image stitching, video stitching is much more difficult, due to the camera motion, dynamic foreground and large parallax.
@@ -191,10 +191,12 @@ In this paper, we extend our content-preserving image stitching to videos that a
   \caption{Pipeline of  our stitching with regular boundary. (a) Input images. (b) initial stitching with irregular boundaries. (c) mesh of initial stitching. (d) outer boundary extracted by polygon boolean extraction. (e) irregular boundary extraction. (f) target regular boundary. (g) mesh of piecewise rectangling. (h) our result. (i) He et al.'s rectangular panorama.} \label{fig:pipeline}
 \end{figure*}
 
- \section{OVERVIEW}
+ \section{ALGORITHM}
 Fig.~\ref{fig:pipeline} gives the pipeline of our content-preserving stitching.
-The input to our approach is a number of images with content overlaps, and the goal is to obtain panorama images with regular boundaries by our content-preserving stitching.
-We first perform traditional image stitching, and extract the irregular boundary by polygon boolean operations.  Then, we further analyze and sort vertices on the irregular boundary, and construct the piecewise rectangular boundary constraints.
+The input to our approach is a number of images with content overlaps, and the goal is to obtain panoramic images with regular boundaries by our content-preserving stitching.
+In this paper, the term \emph{regular} \emph{boundary} refers to the piecewise rectangular boundary.
+We first perform traditional image stitching, and extract the irregular boundary by polygon boolean operations.  
+Then, we further analyze and sort vertices on the irregular boundary, and construct the piecewise rectangular boundary constraints.
 With the boundary constraint above, we obtain the piecewise rectangling result by iteratively solving global optimizations.
 We place quad-mesh on each image, and construct energy functions with constraints on the mesh. After optimization, the stitching results are rendered by image warping and blending.
 The core of our approach is the unified optimization framework that combines image stitching and rectangling, which contains following steps:
@@ -207,32 +209,27 @@ For straight line and global feature preserving, we detect lines in all images u
 \textbf{Initial image stitching}.
 The goal of this step is to initialize our content-preserving stitching, and our regular boundary constraints are based on the analysis of warped meshes after stitching. The stitching strategy in this step is also applied in our global optimization which combines stitching and rectangling.
 We apply APAP~\cite{journals/pami/ZaragozaCTBS14} for accurate feature alignment.
-Inspired by~\cite{conf/eccv/ChenC16}, we also add a global similarity term for more natural stitching, and the distortion is minimized globally.
+Inspired by~\cite{conf/eccv/ChenC16}, we also add a global similarity term for more natural stitching, and globally minimizing the distortion.
 
 \textbf{Irregular boundary extraction}.
 After the initial image stitching, we extract the contour of each warped mesh, and get the irregular boundary by the polygon boolean Union operation.
 Then, we analyze and sort vertices and intersections on the irregular boundary.
 Finally, we set the target rectangular boundary constraints for our piecewise rectangular stitching.
 
- \textbf{Piecewise rectangular stitching}
+\textbf{Piecewise rectangular stitching}
 With the rectangular boundary constraints above, we construct energy optimization which contains image stitching and regular boundary constraint.
 After minimizing the energy function, we get the stitching result by warping and blending.
-We iteratively optimize the stitching result by combining boundary segments near the cuts of each direction.
-
-\section{Content-preserving image stitching}
- In this step, we propose a global optimization which aims to generate panoramas with regular boundaries in the image stitching framework.
- The optimization consists of the following constraints: feature alignment, shape preserving, global similarity preserving, straight lines preserving and regular boundary constraints.
-With the optimized vertices, we warp the mesh by texture mapping, and remove the seams by multi-banded blending.
-For scenes that are not completely shot, our piecewise rectangular stitching can iteratively optimize the target panorama boundary, and make the shape of our panorama be close to a rectangle as mush as possible, while avoiding the unwanted distortions.
+For panorama scenes that are not completely shot, we iteratively optimize the stitching result by combining boundary segments connected by steps, 
+which aims to make the panoramic boundary as rectangular as possible.
 
  \subsection{Initial image stitching}
  \label{sec:Initial image stitching}
- In this step, images are stitched using traditional method, and the irregular boundary of warped mesh are initial conditions for our piecewise rectangular stitching.
- Actually, when the gap between the irregular boundary and the target rectangular boundary is too large, it will be difficult or even impossible for rectangling with unnoticeable distortion.
+ In this step, images are stitched using traditional method, and the irregular boundary of stitching result is the initial conditions for our piecewise rectangular stitching.
+ Actually, when the gap between the irregular boundary and the target rectangular boundary is too large, it will be very difficult or even impossible for rectangling with unnoticeable distortion.
  Inspired by ~\cite{conf/eccv/ChenC16}, we stitch images using the global similarity prior to generate more natural panoramas without too much distortions and limit of field of view.
- Like previous methods, image stitching is performed by mesh-based image warping.
+ Like previous methods, image stitching is performed by the mesh-based image warping.
  Let $V_i$ and $E_i$ be the vertices and edges in image $I_i$, we aim to get deformed vertices $V$ by minimizing the energy function $\Phi(V)$, which contains following terms:
-Feature alignment, local shape and global similarity preserving.
+feature alignment, local shape and global similarity preserving.
 
 \textbf{Feature Alignment}.
 This term aims to align matched images by preserving the feature correspondences between them.
@@ -243,14 +240,14 @@ Given the good performance in piecewise alignment, we apply APAP~\cite{journals/
     ||\mathbf{V}^{ij}_{pq} \cdot  \mathbf{\Omega}^{ij}_{pq} - \mathbf{\widetilde{V}}^{ij}_{pq} \cdot  \mathbf{\widetilde{\Omega}}^{ij}_{pq}||^2,
 \end{split}
 \end{equation}
-where $G$ refers to the image match graph which determine the matched image pair.
-$p_{ij}^m$ represents a pair of matched feature points in image $i$ and $j$ respectively, and $M_{ij}$ is the image matching set.
+where $G$ refers to the image match graph which determines the matched image pair.
+$p_{ij}^m$ represents a pair of matched feature points by matching image $i$ and $j$, and $M_{ij}$ is the image matching set.
 Since the constraints are imposed on vertices of the mesh, we employ the bilinear coordinates represent matched feature points as the interpolation of four vertices of a quad grid
 $p_{ij}^m=\mathbf{V}^{ij}_{pq} \cdot  \mathbf{\Omega}^{ij}_{pq}$ , where $\mathbf{V}^{ij}_{pq}=[V^{ij}_{p,q},V^{ij}_{p+1,q},V^{ij}_{p+1,q+1},V^{ij}_{p,q+1}]$ and $\mathbf{\Omega}^{ij}_{pq}=[\omega^{ij}_{p,q},\omega^{ij}_{p+1,q},\omega^{ij}_{p+1,q+1},\omega^{ij}_{p,q+1}]$.
 
-\textbf{Shape consistency}.
+\textbf{local Shape preserving}.
 This term aims to ensure that each quad grid in the mesh can underdo a similar transform and do not distort too much.
-we use the shape preserving term defined in~\cite{journals/tog/LiuYT013}, which split each grid into two triangles and applies the method in as-rigid-as-possible warping~\cite{journals/tog/IgarashiMH05}.
+we use the shape preserving term defined in~\cite{journals/tog/LiuYT013}, which splits each grid into two triangles and applies the method in as-rigid-as-possible warping~\cite{journals/tog/IgarashiMH05}.
 
 \begin{equation} \label{equ:shape_preserving}
 \begin{split}
@@ -261,11 +258,13 @@ we use the shape preserving term defined in~\cite{journals/tog/LiuYT013}, which 
 \end{split}
 \end{equation}
 
-In Equ.~\ref{equ:shape_preserving}, $\theta$ refers to the angle formed by moving segments From $V_1V_0$ to $V_1V$, when the direction is anticlockwise $\theta=90^{\circ}$, and $\theta=-90^{\circ}$ for the clockwise direction. In our implementation, $V_j^i$ refers to the top-left vertex of all quads in the image mesh, $V_0^i$ and $V_1^i$ are the neighboring vertices of $V_j^i$ in a triangle.
+In Equ.~\ref{equ:shape_preserving}, $\theta$ refers to the angle formed by moving segments from $V_1V_0$ to $V_1V$. 
+When the direction is anticlockwise $\theta=90^{\circ}$, and $\theta=-90^{\circ}$ for the clockwise direction. 
+In our implementation, $V_j^i$ refers to the top-left vertex of all quads in the image mesh, $V_0^i$ and $V_1^i$ are the neighboring vertices of $V_j^i$ in a triangle.
 
 \textbf{Global similarity}.
-We use the global similarity term proposed in~\cite{conf/eccv/ChenC16}, which is important to preserve the naturalness of the panorama images.
-We first set a reference image $I_0$ and its desired rotation $r_0$,  then for each image desired scale $s_i$ and rotation $r_i$ with respect to $I_0$ are calculated, see details in~\cite{conf/eccv/ChenC16}. The global similarity term is defined as
+We use the global similarity term proposed in~\cite{conf/eccv/ChenC16}, which is important to preserve the naturalness of the panoramic images, and can reduce the gap between the irregular boundary and the target rectangle.
+We first set a reference image $I_0$ and its desired rotation $r_0$,  then for each image, the desired scale $s_i$ and rotation $r_i$ with respect to $I_0$ are calculated, see details in~\cite{conf/eccv/ChenC16}. The global similarity term is defined as
 \begin{equation} \label{equ:global_similarity}
 \begin{split}
     \phi_g(\mathbf{V}) = \sum\limits_{i=1}^N\sum\limits_{e^i_j \in \mathbf{E}_i} \alpha(e^i_j)[&|| c(e^i_j)-s_i cos\theta_i ||^2+\\
@@ -279,54 +278,54 @@ In Equ. \ref{equ:global_similarity}, $c(e^i_j)$ and $s(e^i_j)$ refer to the coef
     \alpha(e^i_j)= \cdot \frac{\sum\limits_{q_m\in Q(e^i_j)}Min(d_{cen}(q_m, \Psi_i))}{\sqrt {W_i^2+H_i^2}\cdot |Q(e^i_j)|},
 \end{split}
 \end{equation}
-where $Q_{e^i_j}$ refers to the quads that contains edge $e^i_j$;
-$\Psi_i$ is the overlap region in Image $I_i$;
-$Min(d_{cen(q_m, \Psi_i)})$ calculates the minimum distance between the center of quad $q_m$ to quads in $\Psi_i$;
-$W$ and $H$ are the number of rows and columns in the mesh of image $I_i$.
+where $Q(e^i_j)$ refers to the quads that contain edge $e^i_j$;
+$\Psi_i$ is the overlapping region in image $I_i$;
+$Min(d_{cen(q_m, \Psi_i)})$ calculates the minimum distance between the center of quad $q_m$ and the quads in $\Psi_i$;
+$W$ and $H$ are the number of rows and columns of the mesh in image $I_i$.
 
 With the energy terms defined above, we define the optimization for image stitching as
 \begin{equation} \label{equ:global_stitching}
- \Phi_{stitch}(V)=\arg \min_{\hspace{-0.10in}\textbf{V}}(\gamma_a \phi_a(\textbf{V})+\gamma_s \phi_s(\textbf{V})+\gamma_g \phi_g(\textbf{V})).
+ \Phi_{stitch}(V)=\arg \min_{\hspace{-0.10in}V}(\gamma_a \phi_a(V)+\gamma_s \phi_s(V)+\gamma_g \phi_g(V)).
 \end{equation}
 
-In Equ.~\ref{equ:global_stitching}, there are three weights $\gamma_a$, $\gamma_s$, $\gamma_g$, which controls the importance of the three terms. In our experiments, we set $\gamma_a=1.5$, $\gamma_s=10$, $\gamma_g=0.75$ for most of the cases. The stitching energy $\Phi(V)$ are quadratic and can be efficiently minimized by solving a sparse linear system.
+In Equ.~\ref{equ:global_stitching}, there are three weights $\gamma_a$, $\gamma_s$, $\gamma_g$, which controls the importance of the three terms. 
+In our experiments, we set $\gamma_a=1.5$, $\gamma_s=10$, $\gamma_g=0.75$ for most of the cases. 
+The stitching energy $\Phi(V)$ are quadratic and can be efficiently minimized by solving a sparse linear system.
 
 \subsection{Irregular boundary extraction}
  \label{sec:irregular_boundary}
-For panorama rectangling, we need to drag the vertices on the irregular boundary onto the regular boundary.
-Different from~\cite{journals/tog/HeC013}, which place only one mesh. In our method, the irregular boundary consists of vertices from different image meshes, and there also exists some intersections in the overlapping regions, see the second row of Fig.~\ref{fig:pipline}(c).
-Inspired by the boolean operations on polygons~\cite{journals/gandc/MartinezRF09}, We propose a simple and effective algorithm for irregular boundary construction.
-See Alg.~\ref{alg:irregular_boundary}, the input is the mesh vertices $\mathbf{V}_i$ of each warped image $I_i$, and the goal is to get index of boundary vertices and the directions to be dragged.
-We first get minimum outer rectangle $R$ of all warped meshes, and search $4$ corners of irregular boundaries according to the minimum distance between corners of each mesh $\mathbf{V}_i$ and $R$.
-Then, we construct polygons $\vartheta$  using the contours of each mesh, and the irregular boundary $P$ can be efficiently calculated by the polygon boolean union operation of all boundary polygons.
-With corners $\Delta$ and boundary polygon $P$, the boundary vertices of $4$ directions can be easily obtained by sequencially collecting vertices between neighboring corners of $P$.
-As shown in Fig.~\ref{fig:polybool}, the initial image stitching result has irregular boundary which is the combination of $4$ meshes.
-(b) shows contours of all meshes, and each contour has a different color.  the black circles are intersections of these contours.
-As shown in (c), After the polygon boolean union operations, the irregular boundaries are correctly sorted. With the detection of four corners, boundary vertices (including intersections) are easily detected and classified into $4$ directions.
-For the intersection points, which cannot be constrained as vertices. We first detect the corresponding intersected vertices $\kappa$, and calculate the interpolation weight of the vertices $\eta$,
+Different from~\cite{journals/tog/HeC013}, which uses only one mesh for warping based rectangling, our rectangling scheme starts from the warped meshes of each stitched image.
+The irregular boundary consists of vertices from different image meshes, and intersections of overlapped meshes, see Fig.~\ref{fig:pipeline}(d).
+Inspired by the boolean operations on polygons~\cite{journals/gandc/MartinezRF09}, we propose a simple and effective algorithm for irregular boundary extraction.
+See Alg.~\ref{alg:irregular_boundary}, the input is the mesh vertices $V_i$ of each warped image $I_i$, and the goal is to get irregular boundary vertices and their labels.
+We first get minimum outer rectangle $R$ of all warped meshes, and obtain $4$ corners of irregular boundaries according to the minimum distance between corners of each mesh $V_i$ and $R$.
+Then, we construct polygons $\vartheta$  using the contours of each mesh, and the irregular boundary can be efficiently calculated by the polygon boolean union operation of all boundary polygons.
+With corners $\Delta$ and boundary polygon $P$, the boundary vertices of $4$ directions can be easily obtained by sequentially collecting vertices between neighboring corners of $P$.
+As shown in Fig.~\ref{fig:pipeline}, the initial image stitching result has irregular boundary which is the combination of $4$ image meshes.
+Fig.~\ref{fig:pipeline}(b) shows contours of all meshes, and each contour has a different color.  the black circles are intersections of these contours.
+As shown in Fig.~\ref{fig:pipeline}(c), after the polygon boolean union operations, the irregular boundaries $V^{\Re}$ are correctly extracted and classified into $4$ directions.
+For the intersection points, which cannot be treated as vertices. We first detect the corresponding intersected vertices $\kappa$, and calculate the interpolation weight of the vertices $\eta$,
 then the intersection points can be easily constrained by the neighboring vertices.
-
-%Fig.~\ref{fig:polybool2} shows a challenging example which contains a number of meshes and complex overlaps, and our method can robustly extract and sort the irregular boundary.
 
 \begin{algorithm}
  \label{alg:irregular_boundary}
 %    \SetAlgoNoLine
      \caption{Irregular boundary extraction}
-      \KwIn{Mesh vertices $\mathbf{V}_i$ of each warped image $I_i$, $ i=1, 2,\ldots, N$}
-      \KwOut{Index of boundary vertices $\Re$ and their labels $\zeta$}
+      \KwIn{Mesh vertices $V_i$ of each warped image $I_i$, $ i=1, 2,\ldots, N$}
+      \KwOut{boundary vertices $V^{\Re}$ and their labels $\zeta$}
         Get minimum outer rectangle $R$ of all meshes\;
-        Set $D_{min} = Dist(Corners(R), Corners(\mathbf{V}_i))$\;
-        construct polygon $\vartheta_1$ using contour vertices of mesh $\mathbf{V}_i$\;
+        Set $D_{min} = Dist(Corners(R), Corners(V_i))$\;
+        construct polygon $\vartheta_1$ using contour vertices of mesh $V_i$\;
         Set $P=\vartheta_1$\;
-        Set boundary corners $\Delta= Corners(\mathbf{V}_1)$\;
+        Set boundary corners $\Delta= Corners(V_1)$\;
         \For{$(i=2;j \le N;j++)$}
         {
             Construct polygon $\vartheta_i$ using contour vertices of $I_i$\;
             Polygon boolean Union: $P=P\cup\vartheta_i$\;
-            \If {$(dist(Corners(R), Corners(\mathbf{V}_i)<D_{min}))$}
+            \If {$(dist(Corners(R), Corners(V_i)<D_{min}))$}
             {
-                    $\Delta = Corners(\mathbf{V}_i)$\;
-                    $D_{min}=Dist(Corners(R), Corners(\mathbf{V}_i)$\;
+                    $\Delta = Corners(V_i)$\;
+                    $D_{min}=Dist(Corners(R), Corners(V_i)$\;
             }
         }
         \For{$(j=1;j \le size(P); j++)$}
@@ -345,7 +344,7 @@ then the intersection points can be easily constrained by the neighboring vertic
        Get boundary vertices between neighboring corners of $P$\;
          \For{$(k=1;k \le 4;k++)$}
          {
-                 $\Re(k)=P(\Delta(k),\Delta((k+1)\%4))$\;
+                 $V^{\Re}[k]=P(\Delta(k),\Delta((k+1)\%4))$\;
          }
 \end{algorithm}
 
@@ -367,80 +366,88 @@ then the intersection points can be easily constrained by the neighboring vertic
 \end{comment}
 
 \subsection{Piecewise rectangular boundary constraint}
-For panoramic scenes with missing content, He et al.'s~\cite{journals/tog/HeC013} warping-based rectangling cannot work well, as it may introduce unexpected distortions, see Fig.~\ref{fig:pipeline}(i).
-Actually, panorama images with irregular boundary cannot simply be warped to be a rectangle, and the rectangling process should be content-preserving.
+\label{sec:piecewise_boundary}
+For panoramic scenes with missing content, He et al.'s~\cite{journals/tog/HeC013} warping-based rectangling cannot work well, as it may introduce unexpected distortions after too much warping, see Fig.~\ref{fig:pipeline}(i).
+Actually, panorama images with irregular boundary cannot simply be warped to be a rectangle, and the rectangling process should be content-aware.
 %%By content-preserving, we mean that the shape of target boundary should be designed as rectangular as possible, while avoiding the unwanted distortions.
-In this paper, we propose to the piecewise rectangular boundary which makes the target boundary as rectangular as possible, while avoiding the unwanted distortions.
-See Fig.~\ref{fig:pipeline}(h), with the piecewise rectangular boundary, the stitching result can be cropped easily, while preserving more content in a cropping window.
+In this paper, we propose the piecewise rectangling scheme which makes the target boundary as rectangular as possible, while avoiding the unwanted distortions.
+See Fig.~\ref{fig:pipeline}(h), with the piecewise rectangular boundary, the panoramic image can be cropped easily, while preserving more content in a cropping window.
 
 %In fact, the core of our optimization for content-preserving stitching is to determine the regular boundary constraints.
 %Our main idea is to rectangling the irregular boundary as much as possible(AMAP), as shown in Fig.~\ref{fig:pipeline}(f), such that the final stitched panorama not only preserve the regular boundary, but avoiding the unwanted distortions. See Fig.~\ref{fig:pipeline}(h), with the piecewise rectangular boundary, the stitching result can be cropped easily, while preserving more content in a cropping window.
-
 %See Fig.~\ref{fig:piecewise}, we take the irregular\emph{ top } boundary for example, which consists of boundary vertices of different image meshes and their interactions.
 Alg.~\ref{alg:piecewise_analysis} gives details of piecewise regular boundary analysis.
-The input is mesh vertices of irregular boundaries $V^i$, and the output is the segmented boundary $S^i$, $i=1,2,3,4$ refers to index of $4$ directions.
+The input is mesh vertices of irregular boundaries $V^{\Re(k)}$, and output is the segmented boundary $S$.
 The irregular boundaries are comprised of boundary vertices from different image meshes, which are connected by their intersections.
-We first segment the $V_i$ by intersections and corner vertices (with red boundary in Fig.~\ref{fig:pipeline}(e)) of each mesh.
+We first segment the $V_{\Re(k)}$ by intersections and corner vertices (with red boundary in Fig.~\ref{fig:pipeline}(e)) of each mesh.
 Then we combine neighboring segments with the same direction, and incorporate segments with less than $3$ vertices into previous segment.
-After sorting the irregular boundaries, we calculate the target boundary value of each segment by averaging their coordinates in corresponding direction.
+After analyzing and sorting the irregular boundaries, we calculate the target boundary value of each segment by averaging their coordinates in corresponding direction.
 See Fig.~\ref{fig:pipeline}(f), the top and bottom boundary contain $3$ segments, and the steps are designed to reduce distortions in global warping.
 
 \begin{algorithm}
  \label{alg:piecewise_analysis}
 %    \SetAlgoNoLine
      \caption{Piecewise regular boundary analysis}
-      \KwIn{Mesh vertices $\mathbf{V}^i$ of irregular boundaries, $ i=1, 2, 3, 4$ refer to $4$ directions(T/R/B/L)}
-      \KwOut{Segmented boundary $S^i$, includes vertices, directions, and their target boundary values}
-      Sequentially push intersections and corner points into $\mathbf{F}$\;
-      Segment irregular boundary $\mathbf{V}^i$ by $\mathbf{F}$\;
+      \KwIn{Vertices $V^{\Re}$ on the irregular boundary}
+      \KwOut{Segmented boundary $S$, includes vertices, directions$(1 - y, 0 - x$), and their target boundary values}
+      Sequentially push intersections and corner points into $F$\ in $4$ directions;
+      Segment irregular boundary $V^{\Re}$ by $F$\;
       Set $prevDir=i$\;
-      \For{$(j=1; j < size(F); j++)$}
+      \For{$(i=1;i < \le 4; i++)$}
       {
-           $S^i_j=\mathbf{V}^i(F[j], F[j+1])$\;
-           $S^i_j.dir=direction(F[j], F[j+1])$\;
-      }
-      \For{$(j=1; j <= size(S^i); j++)$}
-      {
-         \If{$(S^i[j].dir == prevDir \&\&  j>1)$}
-         {
-              $S^i[j] -> S^i[j-1]$\;
-         }
-         \Else
-         {
-               \If{$(dist(S^i[j], S^i[j-1]) < \varepsilon)$}
+           \For{$(j=1; j \le size(F); j++)$}
+           {
+                $S_j^i=V^{\Re}(F[j], F[j+1])$\;
+                $S_j^i.dir$=direction of $(F[j], F[j+1])$ in meshes\;
+           }
+           
+           \For{$(j=1; j <= size(S^i); j++)$}
+          {
+             \If{$(S^i[j].dir == prevDir \&\&  j>1)$}
+             {
+                  $S^i[j] -> S^i[j-1]$\;
+             }
+             \Else
+             {
+                   \If{$(dist(S^i[j], S^i[j-1]) < \varepsilon)$}
+                   {
+                         $S^i[j] -> S^i[j-1]$\;
+                   }
+                   \Else
+                   {
+                        $prevDir =S^i[j].dir$\;
+                   }
+              }
+               \If{$(S^i[j].dir\%2)$}
                {
-                     $S^i[j] -> S^i[j-1]$\;
+                    $S^i[j].val = Avg(V^{\Re}(S^i[j]).y)$\;
                }
                \Else
                {
-                    $prevDir = S^i[j].dir$\;
+                    $S^i[j].val = Avg(V^{\Re}(S^i[j]).x)$\;
                }
-          }
-           \If{$(S^i[j].dir\%2)$}
-           {
-                $S^i[j].val = Avg(V^i(S^i[j]).y)$\;
-           }
-           \Else
-           {
-                $S^i[j].val = Avg(V^i(S^i[j]).x)$\;
-           }
+                              
+            } 
+               
       }
 \end{algorithm}
 
 \subsection{Piecewise rectangular stitching}
-We design a global optimization which combines image stitching and rectangling.
-Our energy function contains feature alignment, shape preserving and global similarity constraints that used for stitching,
-and regular boundary, straight line preserving constraints that rectangling irregular boundaries while avoiding unexpected distortions.
+We design a global optimization which incorporate rectangling into image stitching framework.
+Our energy function contains constraints for image stitching, such as feature alignment, local shape and global similarity preserving,
+and constraints for rectangling, such as regular boundary, straight line preserving.
 The energy terms for stitching have been defined in Section~\ref{sec:Initial image stitching}, and we further define energy terms for irregular boundary rectangling as follows.
 
 \textbf{Regular boundary preserving}.
-With the piecewise rectangular boundary constraint, we define the regular boundary preserving energy as
+With the piecewise rectangular boundary constraint defined in Section~\ref{sec:piecewise_boundary}, we define the regular boundary preserving energy as
 \begin{equation} \label{equ:piecewise_boundary}
 \begin{split}
-   &\phi_r(\mathbf{V})=\sum\limits_{i=1}^4\sum\limits_{S^i_j \in \Re(i)}\sum\limits_{V_k \in S^i_j}|| \Lambda(S^i_j)^i[\zeta[V_k] V_k+(1-\zeta[V_k])\\
-   &(\kappa[V_k] \cdot \eta[V_k])]-S^i_j.val ||^2,
+   &\phi_r(\mathbf{V})=\sum\limits_{i=1}^4\sum\limits_{j=1}^{size(S^i)}\sum\limits_{V_k \in S^i[j]}|| \Lambda(S^i[j])^i[\zeta[V_k] V_k+(1-\zeta[V_k])\\
+   &(\kappa[V_k] \cdot \eta[V_k])]-S^i[j].val ||^2,
 \end{split}
 \end{equation}
+
+
 
 %\textbf{Regular boundary preserving}.
 %With the extracted and sorted irregular boundaries $\Re$ in Section~\ref{sec:irregular_boundary}, we construct energy function to drag the irregular boundary to the outer rectangle boundaries, and the energy function is defined as
@@ -450,12 +457,11 @@ With the piecewise rectangular boundary constraint, we define the regular bounda
   % &(\kappa[V_j] \cdot \eta[V_j])]-\delta_i||^2
 %\end{split}
 %\end{equation}
-where $\Re(i), i=1,2,3,4$ refer to the set of vertices in $top$, $right$, $bottom$ and $left$ directions;
-$S^i_j$ represents all segments in direction $i$, and $S^i_j.val$ refers to the values of each target boundary segment;
+where $S$ represents all boundary segments, and $S^i[j].val$ refers to the values of each target boundary segment;
 $\zeta[V_k]$ determines the type of vertices: $1$ - vertices, $0$ - intersections;
 %$\delta_i, i=1,2,3,4$ present top/right/bottom/left boundary values of target rectangle;
 %$\zeta$ represents labels of each $V_i$, 1-vertices, 0-intersections;
-$\Lambda(S^i_j)$ is the $2\times1$ matrix, and $\Lambda(S^i_j)=[0\quad 1] $ or $[1\quad 0]$, when $S^i_j$ is horizontal or vertical.
+$\Lambda(S^i[j])$ is the $2\times1$ matrix, and $\Lambda(S^i[j])=[0\quad 1] $ or $[1\quad 0]$, when $S^i[j]$ is horizontal or vertical.
 For intersection points, we find their neighboring vertices $\kappa$ that generate the intersections, and their corresponding interpolation weights $\eta$,
 then constrains are imposed on these vertices.
 
@@ -465,7 +471,7 @@ We use the line preserving term from~\cite{journals/cgf/LinLCZ16}, and the line 
 Given the line segments, our energy term is defined as
 \begin{equation} \label{equ:line_preserving}
 \begin{split}
-    \phi_l(\mathbf{V}) = \sum\limits_{i=1}^N\sum\limits_{l \in L_i}\sum\limits_{j=1}^{M-1}||&(1-\mu)V_{l, 0}^i \omega_{l, 0}^i + \mu V_{l, M}^i \omega_{l, M}^i\\
+    \phi_l(V) = \sum\limits_{i=1}^N\sum\limits_{l \in L_i}\sum\limits_{j=1}^{M-1}||&(1-\mu)V_{l, 0}^i \omega_{l, 0}^i + \mu V_{l, M}^i \omega_{l, M}^i\\
     &-V_{l, j}^i \omega_{l, j}^i||^2,
 \end{split}
 \end{equation}
@@ -474,7 +480,7 @@ The linear combination of them can easily preserve the straight lines, and the w
 
 With the piecewise regular boundary and straight line preserving constraints,  the energy function for content-preserving image stitching with regular boundary can be defined as
 \begin{equation} \label{equ:content_preserving_stitching}
-\Phi(\textbf{V})=\Phi_{stitch}(\textbf{V})+\gamma_r \phi_r(\textbf{V})+\gamma_l \phi_l(\textbf{V}),
+\Phi(V)=\Phi_{stitch}(V)+\gamma_r \phi_r(V)+\gamma_l \phi_l(V),
 \end{equation}
 where $\Phi_{stitch}$ is the stitching energy function defined in Section~\ref{sec:Initial image stitching}, $\gamma_r$ and $\gamma_l$ are weights to control the importance of energy terms. We set $\gamma_r=10^3$ to ensure the regularity of boundaries.
 In our experiment, we find that the line preserving is more important than the local shape preserving, thus $\gamma_l$ is set to be $20$ to avoid too much distortions in straight lines.
@@ -482,8 +488,8 @@ In our experiment, we find that the line preserving is more important than the l
 \subsection{Optimization}
 We first solve optimization for the initial image stitching, which is defined in Equ.~\ref{equ:global_stitching}.
 However, Equ.~\ref{equ:global_stitching} only constrains shape and scale of each mesh, which is not enough for stitching.
-Thus, we add another term $\phi_p(\mathbf{V})=W\cdot||\mathbf{V}_0^0||^2$ to fix the position of stitched panorama, where
-$\mathbf{V}_0^0$ refers to the first vertex(left-top corner) of the first image, and $M$ is a very large weight ($M=10^4$) to make $\phi_p$ a hard constraint.
+Thus, we add another term $\phi_p(V)=W\cdot||V_0^0||^2$ to fix the position of stitched panorama, where
+$V_0^0$ refers to the first vertex(left-top corner) of the first image, and $M$ is a very large weight ($M=10^4$) to make $\phi_p$ a hard constraint.
 Noting that, each energy term is quadratic and variables are mesh vertices of each image, the energy function can be efficiently optimized by solving a linear system.
 Since this stitching step is only used to get the target rectangle and irregular boundary, we do not need to render the stitching result by warping and blending.
 
@@ -496,14 +502,17 @@ Fig.~\ref{fig:pipeline}(i) is stitching results constrained by piecewise rectang
 
 In this paper, we aim to rectangling the panorama with irregular boundary as much as possible, which means the final shape of the panorama should be as close as possible to a rectangle.
 Thus, we try to further reduce steps on the piecewise rectangular boundary.
-We propose a iterative solution which is described in Alg.~\ref{alg:piecewise_rectangling}.
+We propose an iterative solution which is described in Alg.~\ref{alg:piecewise_rectangling}.
 The first iteration has been accomplished by the optimization above, see Fig.~\ref{fig:piecewise-process}(f),  and we calculate the energy values $E_0$ using the optimized vertices.
-Then we iteratively find the optimal solution, that can preserve regular boundary as much as possible while avoid unwanted distortion.
+Then we iteratively find the optimal solution, that can preserve regular boundary as much as possible while avoiding unwanted distortion.
 %For each boundary with steps, we iteratively find the cut (see Fig.~\ref{fig:piecewise-opti}(d)), and connect the two segments connected by the cut, then
-In the following iteration, for each step, we first analyze feature points and lines detection results near the boundary segments connected by the step, and when there are some features and lines, the step cannot be removed, see Fig.~\ref{fig:pipeline}(h), we preserve the two steps because of the features distributed in the roof and ground.
-When feature and lines are not salient, such as grass and sky, we further analyze it as follows: for each step, we connect the segments neighboring to it, and reconstruct the  $S^i$, then perform image stitching again, finally we choose to remove the step with the minimum energy value $E$.
+In the following iteration, for each step, we first analyze feature points and lines detection results near the boundary segments connected by the step, and when there are some detected features and lines, the step cannot be removed. 
+See Fig.~\ref{fig:pipeline}(h), we preserve the two steps because of the features and lines distributed in the roof and ground.
+When feature and lines are not salient, such as grass and sky, we further analyze it as follows: for each step, we connect the segments neighboring to it, 
+and reconstruct all segments  $S$, then perform image stitching again, finally we choose to remove the step with the minimum energy value $E$.
 In each iteration, the threshold $\sigma=|E_t-E_0|/20$, according to many experiments.
-When the energy value $E_t-E_0 > \sigma$, it means that the distortion in this iteration is not acceptable. Thus the iteration stops, and we finally get the optimal solution for the piecewise rectangling.
+When the energy value $E_t-E_0 > \sigma$, it means that energy varies too much compared with last iteration, thus it is not acceptable.
+Then the iteration stops, and we finally get the optimal solution for the piecewise rectangling.
 Actually, the panorama rectangling proposed by He et al.~\cite{journals/tog/HeC013} can be classified as a special case of our piecewise rectangling, when there is no steps in the target boundaries.
 Fig.~\ref{fig:piecewise-process} (e) is the rectangling result by our method when all steps are removed, and there exists too much distortions in the bottom-right side.
 Compared with He et al.'s~\cite{journals/tog/HeC013} result in Fig.~\ref{fig:piecewise-process} (d) which contains holes and distortions, our rectangling result is better.
@@ -522,36 +531,36 @@ Results show that each iteration can make the boundary of panorama be closer to 
  \label{alg:piecewise_rectangling}
 %    \SetAlgoNoLine
      \caption{Iterative piecewise rectangling stitching}
-      \KwIn{Source images,   $\textbf{S}$ refers to segments of the piecewise rectangular boundary in $4$ directions, and $\textbf{P}$ represents steps that connect all segments}
+      \KwIn{Source images,   $S$ refers to segments of the piecewise rectangular boundary, and $P$ represents steps that connect all segments}
       \KwOut{Stitching result with optimized regular boundary}
-      Stitching with $\textbf{S}$ as boundary constraints\;
-      $E_0 = \Phi(\textbf{V}), \textbf{V}$ is the optimized vertices\;
+      Init: Perform stitching with $S$ as boundary constraints\;
+      $E_0 = \Phi(V)$, where $V$ is the optimized vertices\;
       \While{(1)}
       {
            $Idx=0, E_t=10^6$\;
 
-           \For{$(k=0;k<size(\textbf{P});k++)$}
+           \For{$(k=0;k<size(P);k++)$}
            {
-                  segments connected by $\textbf{P}[k]$\;
-                  reconstruct $\textbf{S}$\;
-                  Stitching with $\textbf{S}$ as boundary constraints\;
-                  $E = \Phi(\textbf{V})$\;
+                  segments connected by $P[k]$\;
+                  reconstruct $S$\;
+                  Stitching with $S$ as boundary constraints\;
+                  $E = \Phi(V)$\;
                   \If{$(E<E_t)$}
                   {
                        $Idx=k$\;
-                        $E_t = \Phi(\textbf{V})$\;
+                        $E_t = \Phi(V)$\;
                   }
            }
            \If{($(E_t-E_0)<\sigma)$}
            {
-                remove $\textbf{P}[Idx]$\;
+                remove $P[Idx]$\;
                 $E_0=E_t$\;
            }
            \Else
            {
                 break;
            }
-           \If{$size(\textbf{P})==0$}
+           \If{$size(P)==0$}
            {
                break;
            }
@@ -679,10 +688,17 @@ In this section, we show a variety of panoramic images by image stitching with r
 Then we further give performance and limitation of our method.
 In this paper, we use the dataset provided by Chen et al.~\cite{conf/eccv/ChenC16} for image stitching, and the data for video stitching is from Perazzi et al.'s paper~\cite{journals/cgf/PerazziSZKWWG15}. For better exposition, we only provide input for examples provided by ourselves.
 
- \subsection{Results}
 
-Fig.~\ref{fig:holes_he} is the comparison of our method with He et al.'s method~\cite{journals/tog/HeC013}. The left initial stitching is the first step of our method. For fair comparison, we also take it as the input of He et al.'s method. As shown in the comparison, the main difference between the two method is the number of mesh used in the global warping.
-Actually, it is hard to place mesh on images with irregular boundary, and the boundary of the mesh always contain some holes(see bottom side of (a) and (b)), which will finally degrade the quality of the final rectangular panorama, see the zoom-in view in (c). In addition, He et al's method treat stitching and rectangling as two individual processes, thus cannot well preserve the local and global structure of the panorama. In our method, the meshes are placed on the each rectangular images, and the warping are guided by the global optimization which combines stitching and rectangling constraints, thus can produce stitching with regular boundaries while reducing the local and global distortion.
+ \subsection{Results}
+Fig.~\ref{fig:holes_he} is the comparison of our method with He et al.'s method~\cite{journals/tog/HeC013}.
+For fair comparison, the input of He et al.'s~\cite{journals/tog/HeC013} method is our initial stitching which has irregular boundary.
+ The left initial stitching is the first step of our method. 
+As shown in the comparison, the main difference between the two method is the number of mesh used in the global warping.
+Actually, it is hard to place mesh on images with irregular boundary, and the boundary of the mesh always contain some holes(see bottom side of Fig.~\ref{fig:holes_he}(a) and (b)), 
+which will finally degrade the quality of the final rectangular panorama, see the zoom-in view in Fig.~\ref{fig:holes_he}(c). 
+In addition, He et al's method treat stitching and rectangling as two individual processes, thus cannot well preserve the local and global structure of the panorama. 
+In our method, the meshes are placed on the each rectangular images, and the warping are guided by the global optimization which combines stitching and rectangling constraints, 
+thus can produce stitching with regular boundaries while reducing the local and global distortion, see Fig.~\ref{fig:holes_he}(f).
 
  \begin{figure*} %% htbp
   \centering
@@ -691,7 +707,12 @@ Actually, it is hard to place mesh on images with irregular boundary, and the bo
   For our method: (d) meshes of our initial stitching; (e) meshes after the global warping; (f) our rectangular panorama.} \label{fig:holes_he}
 \end{figure*}
 
-Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in terms of line preserving. In Chen et al.'s method~\cite{conf/eccv/ChenC16}, their line segment detection is used for global feature preserving, like scale and rotation, but they cannot preserve straight lines, as shown in (a). He et al.'s method is limited to the input, and when the input panorama fails to preserve straight lines, their method also fails, see the arrows in (b). (c) and (d) are the initial piecewise rectangular stitching results with and without line preserving, and results show that our method can well preserve straight line in our optimization framework. (e) is the final result after several iterations, which not only preserves lines, but avoid unexpected distortions.
+Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in terms of line preserving. 
+In Chen et al.'s method~\cite{conf/eccv/ChenC16}, their line segment detection is used for global feature preserving, like scale and rotation, but they cannot preserve straight lines, as shown in (a). 
+He et al.'s method is limited to the input, and when the input panorama fails to preserve straight lines, their method also fails, see the arrows in Fig~\ref{fig:result_office}(b). 
+Fig~\ref{fig:result_office}(c) and (d) are the initial piecewise rectangular stitching results with and without line preserving, 
+and results show that our method can well preserve straight line in our optimization framework. 
+Fig~\ref{fig:result_office}(e) is the final result after several iterations, which not only preserves lines, but avoid unexpected distortions.
 
  \begin{figure*} %% htbp
   \centering
@@ -699,8 +720,15 @@ Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in te
   \caption{Comparison with state-of-the-art methods. (a) Chen's~\cite{conf/eccv/ChenC16} stitching with global prior. (b) He et al.'s~\cite{journals/tog/HeC013} rectangling stitching. (c) and (d) are Our piecewise rectangling results in the $1_{st}$ iteration with and without line preserving). (e) our final stitching results after several iterations. } \label{fig:result_office}
 \end{figure*}
 
-Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching with missing contents in the scene. We provide two groups of experiments to show the effectiveness of our method in challenging cases. (a) is the initial stitching results, which is also the input of He et al.'s~\cite{journals/tog/HeC013} method. (b) and (c) show the meshes after initial stitching and the extracted irregular boundaries.
-(d) and (e) are the rectangular stitching results by He et al.'s and our method. Although both of them has severe distortions, our result is more reasonable and visual pleasing. In addition, the result by He et al.'s method has holes, due to the drawbacks of their mesh. (f) is our piecewise rectangling result, which is the optimal panorama with less distortion, and can preserve the content of panorama in the rectangular windows as much as possible.
+Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching with missing contents in the scene. 
+We provide two groups of experiments to show the effectiveness of our method in challenging cases. 
+Fig.~\ref{fig:piecewise-compare}(a) is the initial stitching results, which is also the input of He et al.'s~\cite{journals/tog/HeC013} method. 
+Fig.~\ref{fig:piecewise-compare}(b) and (c) show the meshes after initial stitching and the extracted irregular boundaries.
+Fig.~\ref{fig:piecewise-compare}(d) and (e) are the rectangular stitching results by He et al.'s and our method.
+ Although both (d) and (e) have severe distortions, our result is more reasonable and visual pleasing. 
+ In addition, the result by He et al.'s method has holes, due to the drawbacks of their mesh placement. 
+ Fig.~\ref{fig:piecewise-compare}(f) is our piecewise rectangling result, which is the optimal panorama with less distortion, 
+ and can preserve the content of panorama in the rectangular window as much as possible.
 
 \begin{figure*}
   \centering
@@ -708,7 +736,13 @@ Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching with 
   \caption{Results and comparison of stitching with missing contents. There are two sets of results, and each set is as follows: (a) Initial stitching result with irregular boundaries. (b)  Warped meshes of initial stitching. (c) Irregular boundary extraction. (d) and (e) are rectangling stitching by He's~\cite{journals/tog/HeC013} and our method respectively. (f) our piecewise rectangular stitching result.} \label{fig:piecewise-compare}
 \end{figure*}
 
-Fig.~\ref{fig:completion} shows comparison with image completion. (a) is the initial stitching result. By completing holes in (a) using Huang et al.'s~\cite{journals/tog/HuangKAK14} method, we get rectangular panorama as shown in (c). Zoom-in view in (c) shows that the completion method is limited to synthesize semantic contents. (b) is the piecewise rectangling method, and our method tries the best to preserve regular boundaries while preventing unwanted distortions. Based on our result, image completion can be used to synthesize the regular hole on the left, result in (d) shows that the combination of our method and completion is successful.
+Fig.~\ref{fig:completion} shows comparison with image completion. 
+Fig.~\ref{fig:completion}(a) is the initial stitching result. 
+By completing holes in Fig.~\ref{fig:completion}(a) using Huang et al.'s~\cite{journals/tog/HuangKAK14} method, we get rectangular panorama as shown in Fig.~\ref{fig:completion}(c). 
+Zoom-in view in Fig.~\ref{fig:completion}(c) shows that the completion method is limited to synthesize semantic contents. 
+Fig.~\ref{fig:completion}(b) is the piecewise rectangling method, and our method tries the best to preserve regular boundaries while preventing unwanted distortions. 
+Based on our piecewise rectangling result,  we apply Huang et al.'s~\cite{journals/tog/HuangKAK14} method to complete the rectangular hole on the left, 
+and result in Fig.~\ref{fig:completion}(d) shows that the combination of our method and completion is more successful than the completion alone.
 
  \begin{figure} %% htbp
   \centering
@@ -725,7 +759,9 @@ Fig.~\ref{fig:completion} shows comparison with image completion. (a) is the ini
 \end{figure}
 \end{comment}
 
-Fig.~\ref{fig:challenging_cases} gives results of challenging cases, and each case is very different from common examples. The first row is results of initial stitching result with irregular boundaries, and the second row shows our piecewise rectangling panorama. With the piecewise rectangular boundaries, the panorama can be easily cropped and completed, thus can improve the visual effects and user experience of panorama.
+Fig.~\ref{fig:challenging_cases} gives results of challenging cases, and each case is very different from common examples. 
+The first row is results of initial stitching result with irregular boundaries, and the second row shows our piecewise rectangling panorama. 
+With the piecewise rectangular boundaries, the panoramic images can be easily cropped and completed, thus can improve the visual effects and viewing experience of panorama.
 
  \begin{figure} %% htbp [t]
   \centering
@@ -745,14 +781,14 @@ Fig.~\ref{fig:challenging_cases} gives results of challenging cases, and each ca
 
 Recent years, with the fast development of intelligent devices such as smart phones, pad etc., selfies have become more and more popular.
 In general, selfie images are mostly shot by mobile phones by holding them or fixing them to selfie sticks.
-Since the camera is very close to people, the selfie photos are always limited by the field-of-view, thus reducing the fun of selfies.
+Since the camera is very close to people, the selfie photos are always limited by the field-of-view, thus may reduce the fun of selfies.
 To produce selfies with large field-of-view, we apply our image stitching to producing selfie panorama.
 Actually, the front-facing camera which is used for selfie shotting, can not shoot a panorama view.
 We first take photos of the panorama view using the back camera, then shot our portrait using the front-facing camera on the background of the panorama.
 See Fig.~\ref{fig:selfie}, (a) is the input, which contains photos for the panorama background, and the portrait photo.
 (b) is the result by Chen et al.'s stitching~\cite{conf/eccv/ChenC16}, which contains irregular boundaries.
-(c) is result by our method. However, the portrait is distorted too much.
-We first detect the face the portrait photo, and modify Equ.~\ref{equ:shape_preserving} as
+(c) is result by our method, and the red rectangle shows distortion on the human face.
+To fix this problem, we first detect the face the portrait photo, and modify Equ.~\ref{equ:shape_preserving} as
 \begin{equation} \label{equ:shape_preserving1}
 \begin{split}
     \phi_s(\mathbf{V}) = \sum\limits_{i=1}^N\sum\limits_{j} \
@@ -771,7 +807,7 @@ By preserving the shape of  mesh in the face region, the stitching result is muc
 
 \subsubsection{Rectangling Video Panorama}
 
-We further apply our method to videos.
+We further apply our method to videos stitching.
 Actually, it is difficult to stitch the videos from independent hand-held cameras, and rectangling them is even more challenging.
 Because the regular boundary in each frame is different and the temporal coherence is difficult to maintain due the the shaking in each video.
 Inspired by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} work, we aim to rectangling panorama videos from unstructured camera arrays, which are fixed on a rag.
@@ -780,8 +816,8 @@ For temporal coherence, we propose a simple and effective scheme as follows.
 We first divide videos into several blocks ($1$ block=$30$ frames), and neighboring block has $10$ frames overlap.
 For each block, we compute the stitching result for the first frame, and the warping parameters are used for other frames.
 For the overlapping part, the warping parameters are linear combination of neighboring blocks.
-Fig.~\ref{fig:video} shows result two sets of results, and each set shows video panoramas of different frames by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} and our method.
-Comparison shows that our method is effective to rectangling video panorama shot by fixed camera arrays.
+Fig.~\ref{fig:video} shows two sets of results, and each set shows video panoramas of $4$ frames by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} and our method.
+Comparison shows that our method is effective to rectangling video panorama shot by fixed camera arrays, and can provide better view experience.
 
  \begin{figure*} %% htbp
   \centering
@@ -790,7 +826,8 @@ Comparison shows that our method is effective to rectangling video panorama shot
 \end{figure*}
 
  \subsection{Performance}
-We report performance of our method on a Intel Core i7 8550U 1.99GHz laptop with 16G RAM for examples in this paper. Take Fig.\ref{fig:pipeline} for example, the input contains $5$ images, and size of each image is $800\times600$, the initial stitching cost $0.76$s, which includes feature matching, energy construction and optimization.
+We report performance of our method on a Intel Core i7 8550U 1.99GHz laptop with 16G RAM for examples in this paper. 
+Take Fig.\ref{fig:pipeline} for example, the input contains $5$ images, and size of each image is $800\times600$, the initial stitching cost $0.76$s, which includes feature matching, line detection, energy construction and optimization.
 Then, the stitching with rectangular boundary constraint cost $0.49$s, which include the irregular boundary extraction, boundary constraint construction and iterative optimization. Finally, with the warped vertices, texture mapping and blending are performed, and the time cost is $2.15$s.
 In our two-step optimization, the energy terms are similar, thus we construct them only once. In addition, the energy terms are quadratic, thus can be efficiently solved.
 For our iterative optimization in the piecewise rectangling, results in each iteration are similar, thus we apply conjugate gradient method, which takes result of last iteration as input, thus can solve the optimization more efficiently.
@@ -800,7 +837,8 @@ Due to the free movement of hand-held cameras, panorama images has irregular bou
 Our piecewise rectangling stitching can effectively rectify these problems by warping-based optimizations with regular boundary constraints.
 However, there are still some limitations:
 (1) Similar to most warping-based methods, our method cannot well preserve all lines when there are many lines in local regions.
-(2) Our method may fail when there is strong structure near the intersection of neighboring meshes. See Fig.~\ref{fig:failure}, the zoom-in view show that, our piecewise rectangling scheme may introduce unwanted distortion in order to preserve the rectangular boundaries.
+(2) Our method may fail when there is strong structure near the intersection of neighboring meshes. 
+See Fig.~\ref{fig:failure}, the zoom-in view show that, our piecewise rectangling scheme may introduce unwanted distortion in order to preserve the rectangular boundaries.
 
  \begin{figure} %% htbp
   \centering
@@ -816,15 +854,13 @@ With the outer boundary, we setup the piecewise rectangular boundary constraint 
 Compare with He et al.'s panorama rectangling, our method is more robust and effective.
 Especially for panoramic scenes with missing content, our piecewise rectangling can not only regularize the stitching boundary as-much-as-possible, but avoids unwanted distortions.
 Experimental results and comparisons show that our method is effective and better than state-of-the-art methods. Some challenging examples show the robustness and practicability.
-We further apply our method to Selfie panorama and video stitching, which demonstrate the versatility of our approach.
+We further apply our method to selfie panorama and video stitching, which demonstrates the versatility of our approach.
 
 In the future, we will consider more features to improve the performance of panorama boundary rectangling, such as structure, saliency, scene analysis etc.
 For video stabilization and stitching, the warping-based method may also introduce the irregular boundaries.
 Regularizing the boundary of warped videos can preserve more content in a cropping window and improve the viewing experiences.
 However, for videos shot by freely moving hand-held cameras, it is difficult to define the regular boundary constraint, and maintain the spatial-temporal coherence.
 We leave these problems as our future work.
-
-
 
  %\begin{equation} \label{equ:brush_diffusion}
 %\begin{aligned}
