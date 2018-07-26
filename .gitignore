@@ -3,3 +3,4 @@
 *.log
 rectangling.pdf
 *.gz
+*.synctex(busy)
