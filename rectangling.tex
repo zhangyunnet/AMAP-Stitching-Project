@@ -682,12 +682,12 @@ Then the energy function for rectangling stitching is redefined as
 
 In this section, we show a variety of panoramic images by image stitching with regular boundary constraint, and applications that benefit from our approach.
 Then we further give performance and limitation of our method.
-In this paper, we use the dataset provided by Chen et al.~\cite{conf/eccv/ChenC16} for image stitching, and the data for video stitching is from Perazzi et al.'s paper~\cite{journals/cgf/PerazziSZKWWG15}. For better exposition, we only provide input for examples provided by ourselves.
+In the experiments, we use our own examples and the dataset provided by Chen et al.~\cite{conf/eccv/ChenC16} for image stitching and Perazzi et al.~\cite{journals/cgf/PerazziSZKWWG15} for video stitching. For better exposition, we only provide input for examples provided by ourselves.
 
- \subsection{Results}
+ \subsection{Results and Comparisons}
 
-Fig.~\ref{fig:holes_he} is the comparison of our method with He et al.'s method~\cite{journals/tog/HeC013}. The left initial stitching is the first step of our method. For fair comparison, we also take it as the input of He et al.'s method. As shown in the comparison, the main difference between the two method is the number of mesh used in the global warping.
-Actually, it is hard to place mesh on images with irregular boundary, and the boundary of the mesh always contain some holes(see bottom side of (a) and (b)), which will finally degrade the quality of the final rectangular panorama, see the zoom-in view in (c). In addition, He et al's method treat stitching and rectangling as two individual processes, thus cannot well preserve the local and global structure of the panorama. In our method, the meshes are placed on the each rectangular images, and the warping are guided by the global optimization which combines stitching and rectangling constraints, thus can produce stitching with regular boundaries while reducing the local and global distortion.
+The comparison with He et al.'s method ~\cite{journals/tog/HeC013} is shown in Fig.~\ref{fig:holes_he}. On the left, we show the initial stitching result in the first step of our method. For fair comparison, we also take it as the input of He et al.'s method. Our global warping method utilize greater number of mesh vertices than their methods.
+Actually, for their rectangling method, it is hard to place mesh on images with irregular boundary. It is common that the boundary parts of the mesh contain some holes (at the bottom of Fig.~\ref{fig:holes_he}(a) and (b)), which will finally degrade the quality of the final rectangular panorama, as in Fig.~\ref{fig:holes_he}(c). In addition, He et al's method treats stitching and rectangling as two individual processes, thus cannot well preserve the local and global structure of the scene. In our method, the meshes are placed on the each rectangular images, and the warping are guided by the global optimization which combines stitching and rectangling constraints, thus can produce stitching with regular boundaries with little local and global distortion.
 
  \begin{figure*} %% htbp
   \centering
@@ -696,7 +696,7 @@ Actually, it is hard to place mesh on images with irregular boundary, and the bo
   For our method: (d) meshes of our initial stitching; (e) meshes after the global warping; (f) our rectangular panorama.} \label{fig:holes_he}
 \end{figure*}
 
-Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in terms of line preserving. In Chen et al.'s method~\cite{conf/eccv/ChenC16}, their line segment detection is used for global feature preserving, like scale and rotation, but they cannot preserve straight lines, as shown in (a). He et al.'s method is limited to the input, and when the input panorama fails to preserve straight lines, their method also fails, see the arrows in (b). (c) and (d) are the initial piecewise rectangular stitching results with and without line preserving, and results show that our method can well preserve straight line in our optimization framework. (e) is the final result after several iterations, which not only preserves lines, but avoid unexpected distortions.
+Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in terms of line preserving when stitching. In Chen et al.'s method~\cite{conf/eccv/ChenC16}, their line segment detection is used for feature preserving for global transformation, like scale and rotation, but they cannot preserve straight lines, as shown in (a). He et al.'s method is limited to the input panorama. When the input panorama fails to preserve straight lines, their method also fails, see the arrows in (b). (c) and (d) are the initial piecewise rectangular stitching results with and without line preserving, and results show that our method can well preserve straight lines. (e) is the final result after several iterations, which not only preserves lines, but also avoid unexpected distortions.
 
  \begin{figure*} %% htbp
   \centering
@@ -704,8 +704,8 @@ Fig~\ref{fig:result_office} gives comparison with state-of-the-art methods in te
   \caption{Comparison with state-of-the-art methods. (a) Chen's~\cite{conf/eccv/ChenC16} stitching with global prior. (b) He et al.'s~\cite{journals/tog/HeC013} rectangling stitching. (c) and (d) are Our piecewise rectangling results in the $1_{st}$ iteration with and without line preserving). (e) our final stitching results after several iterations. } \label{fig:result_office}
 \end{figure*}
 
-Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching with missing contents in the scene. We provide two groups of experiments to show the effectiveness of our method in challenging cases. (a) is the initial stitching results, which is also the input of He et al.'s~\cite{journals/tog/HeC013} method. (b) and (c) show the meshes after initial stitching and the extracted irregular boundaries.
-(d) and (e) are the rectangular stitching results by He et al.'s and our method. Although both of them has severe distortions, our result is more reasonable and visual pleasing. In addition, the result by He et al.'s method has holes, due to the drawbacks of their mesh. (f) is our piecewise rectangling result, which is the optimal panorama with less distortion, and can preserve the content of panorama in the rectangular windows as much as possible.
+Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching for scenes with missing contents. We provide two groups of experiments to show the effectiveness of our method in this kind of challenging cases. (a) is the initial stitching results, which is also the input of He et al.'s~\cite{journals/tog/HeC013} method. (b) and (c) show the meshes after initial stitching and the extracted irregular boundaries respectively.
+(d) and (e) are the rectangular stitching results by He et al.'s and our method. Although both of them has distortions, our result is more reasonable and visual pleasing. In addition,  due to the drawback of their mesh representation on the whole stitched input panorama, the result by He et al.'s method has holes. (f) is our piecewise rectangling result, which is the optimal panorama with less distortion, and can preserve the content of panorama in the rectangular windows as much as possible.
 
 \begin{figure*}
   \centering
@@ -713,7 +713,7 @@ Fig.~\ref{fig:piecewise-compare} gives results and comparison of stitching with 
   \caption{Results and comparison of stitching with missing contents. There are two sets of results, and each set is as follows: (a) Initial stitching result with irregular boundaries. (b)  Warped meshes of initial stitching. (c) Irregular boundary extraction. (d) and (e) are rectangling stitching by He's~\cite{journals/tog/HeC013} and our method respectively. (f) our piecewise rectangular stitching result.} \label{fig:piecewise-compare}
 \end{figure*}
 
-Fig.~\ref{fig:completion} shows comparison with image completion. (a) is the initial stitching result. By completing holes in (a) using Huang et al.'s~\cite{journals/tog/HuangKAK14} method, we get rectangular panorama as shown in (c). Zoom-in view in (c) shows that the completion method is limited to synthesize semantic contents. (b) is the piecewise rectangling method, and our method tries the best to preserve regular boundaries while preventing unwanted distortions. Based on our result, image completion can be used to synthesize the regular hole on the left, result in (d) shows that the combination of our method and completion is successful.
+Fig.~\ref{fig:completion} shows the comparison with rectangular results generated with the help of image completion. By completing holes in (a) using Huang et al.'s~\cite{journals/tog/HuangKAK14} method, we get rectangular panorama as shown in (c). Zoom-in window in (c) shows that the completion method has a poor performance in synthesizing semantic contents. (b) is the piecewise rectangling method, and our method performs the best to preserve regular boundaries while preventing undesirable distortions. Based on our result, image completion can be used to synthesize the regular hole on the left, result in (d) shows that the combination of our method and completion is successful.
 
  \begin{figure} %% htbp
   \centering
@@ -730,7 +730,7 @@ Fig.~\ref{fig:completion} shows comparison with image completion. (a) is the ini
 \end{figure}
 \end{comment}
 
-Fig.~\ref{fig:challenging_cases} gives results of challenging cases, and each case is very different from common examples. The first row is results of initial stitching result with irregular boundaries, and the second row shows our piecewise rectangling panorama. With the piecewise rectangular boundaries, the panorama can be easily cropped and completed, thus can improve the visual effects and user experience of panorama.
+Fig.~\ref{fig:challenging_cases} gives results of challenging cases, especially for the previous panorama rectangling methods. With the generated piecewise rectangular boundaries using our method, the panorama can be easily cropped or even completed. One can generate photos with more content by choosing a rectangular window in our results, compared to the original irregular boundaries. \zfl{Can we add one or two cropped photos to demonstrate that? It would be better if we can compare it with the photo we can crop from the irregular boundary result} Thus, our method can improve the visual effects and user experience of panorama.
 
  \begin{figure} %% htbp [t]
   \centering
@@ -749,14 +749,11 @@ Fig.~\ref{fig:challenging_cases} gives results of challenging cases, and each ca
  \subsubsection{Selfie expansion}
 
 Recent years, with the fast development of intelligent devices such as smart phones, pad etc., selfies have become more and more popular.
-In general, selfie images are mostly shot by mobile phones by holding them or fixing them to selfie sticks.
-Since the camera is very close to people, the selfie photos are always limited by the field-of-view, thus reducing the fun of selfies.
-To produce selfies with large field-of-view, we apply our image stitching to producing selfie panorama.
-Actually, the front-facing camera which is used for selfie shotting, can not shoot a panorama view.
-We first take photos of the panorama view using the back camera, then shot our portrait using the front-facing camera on the background of the panorama.
-See Fig.~\ref{fig:selfie}, (a) is the input, which contains photos for the panorama background, and the portrait photo.
-(b) is the result by Chen et al.'s stitching~\cite{conf/eccv/ChenC16}, which contains irregular boundaries.
-(c) is result by our method. However, the portrait is distorted too much.
+In general, selfie images are mostly shot by mobile phones by holding them in hand or selfie sticks.
+Since the camera is very close to people, the selfie photos are always with limited field-of-view, thus reducing the fun of selfies.
+To produce selfies with large field-of-view, we apply our image stitching method to producing selfie panorama.
+Actually, the front-facing camera which is used for selfie shootting, can not shoot a panorama view.
+Thus we first take photos of the panorama view using the back camera, then shot our portrait using the front-facing camera on the background of the panorama. Then we stitch all the captured photos. We further propose to preserve the important visual features on the face region when stitching to avoid distortion on faces.
 We first detect the face the portrait photo, and modify Equ.~\ref{equ:shape_preserving} as
 \begin{equation} \label{equ:shape_preserving1}
 \begin{split}
@@ -764,8 +761,11 @@ We first detect the face the portrait photo, and modify Equ.~\ref{equ:shape_pres
     \alpha_j^i||V_j^i -V_1^i-\xi \mathbf{R}(V_0^i -V_1^i)||^2,
 \end{split}
 \end{equation}
-where $alpha_j^i$ refers to the saliency value of vertex $V_j^i $, we give a big value ($alpha_j^i$=20) for vertices in the face region, and $1$ for others.
-By preserving the shape of  mesh in the face region, the stitching result is much more visual pleasing, as shown in (d).
+where $alpha_j^i$ refers to the saliency value of vertex $V_j^i $, we give a big value ($alpha_j^i$=20) for vertices in the face region, and $1$ for others. By preserving the shape of  mesh in the face region, the stitching result is much more visual pleasing
+The result is shown In Fig.~\ref{fig:selfie}. (a) shows all the input images, including photos for the panorama background, and the portrait photo.
+We can see that in the result by Chen et al.'s method~\cite{conf/eccv/ChenC16}, there are irregular boundaries.
+(c) is result by our piecewise rectangular stitching method without the consideration of face features, where the portrait is distorted too much.
+As shown in (d), the proposed method with the constraints on preserving facial region can generate the best expanded selfie panorama.
 
  \begin{figure} %% htbp
   \centering
@@ -776,17 +776,16 @@ By preserving the shape of  mesh in the face region, the stitching result is muc
 
 \subsubsection{Rectangling Video Panorama}
 
-We further apply our method to videos.
-Actually, it is difficult to stitch the videos from independent hand-held cameras, and rectangling them is even more challenging.
-Because the regular boundary in each frame is different and the temporal coherence is difficult to maintain due the the shaking in each video.
-Inspired by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} work, we aim to rectangling panorama videos from unstructured camera arrays, which are fixed on a rag.
-For fixed camera configurations,  the warping parameters for stitching in each frame are nearly invariant.
+We further apply our method to panoramic videos.
+In fact, it is difficult to stitch the videos from individual hand-held cameras, and rectangling them is even more challenging.
+The reason is that the regular boundary in each frame would be different and the temporal coherence is difficult to maintain due the shaking in each video.
+Inspired by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} work, we aim to rectangling panorama videos from unstructured camera arrays, but with fixed camera configurations.
+Then the warping parameters for stitching in each frame are nearly invariant.
 For temporal coherence, we propose a simple and effective scheme as follows.
 We first divide videos into several blocks ($1$ block=$30$ frames), and neighboring block has $10$ frames overlap.
 For each block, we compute the stitching result for the first frame, and the warping parameters are used for other frames.
 For the overlapping part, the warping parameters are linear combination of neighboring blocks.
-Fig.~\ref{fig:video} shows result two sets of results, and each set shows video panoramas of different frames by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} and our method.
-Comparison shows that our method is effective to rectangling video panorama shot by fixed camera arrays.
+Fig.~\ref{fig:video} and supplementary videos shows result two sets of results, and each set shows video panoramas of different frames by Perazzi et al.'s~\cite{journals/cgf/PerazziSZKWWG15} and our method. Comparison shows that our method is effective to rectangling video panorama shot by fixed camera arrays.
 
  \begin{figure*} %% htbp
   \centering
@@ -795,7 +794,7 @@ Comparison shows that our method is effective to rectangling video panorama shot
 \end{figure*}
 
  \subsection{Performance}
-We report performance of our method on a Intel Core i7 8550U 1.99GHz laptop with 16G RAM for examples in this paper. Take Fig.\ref{fig:pipeline} for example, the input contains $5$ images, and size of each image is $800\times600$, the initial stitching cost $0.76$s, which includes feature matching, energy construction and optimization.
+We report performance of our method on a Intel Core i7 8550U 1.99GHz laptop with 16G RAM. Take Fig.\ref{fig:pipeline} for example, the input contains $5$ images, and size of each image is $800\times600$, the initial stitching cost $0.76$s, which includes feature matching, energy construction and optimization.
 Then, the stitching with rectangular boundary constraint cost $0.49$s, which include the irregular boundary extraction, boundary constraint construction and iterative optimization. Finally, with the warped vertices, texture mapping and blending are performed, and the time cost is $2.15$s.
 In our two-step optimization, the energy terms are similar, thus we construct them only once. In addition, the energy terms are quadratic, thus can be efficiently solved.
 For our iterative optimization in the piecewise rectangling, results in each iteration are similar, thus we apply conjugate gradient method, which takes result of last iteration as input, thus can solve the optimization more efficiently.
